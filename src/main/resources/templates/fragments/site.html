@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="border-b border-line" th:fragment="header(homeUrl, otherRendererUrl, currentRenderer, otherRenderer)">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-5">
+        <a class="flex min-w-0 items-center gap-3 text-primary no-underline" th:href="${homeUrl}">
+            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent-solid font-black text-accent-ink">K</span>
+            <div>
+                <p class="text-sm font-bold tracking-wide">KLIBS LAB</p>
+                <p class="hidden text-xs text-subtle sm:block">Server-rendered explorer</p>
+            </div>
+        </a>
+
+        <div class="flex shrink-0 items-center gap-2">
+            <button class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-3 py-2 text-xs font-semibold text-muted transition hover:border-accent hover:text-primary"
+                    type="button" data-theme-toggle="true" aria-label="Toggle color theme" title="Toggle color theme">
+                <span data-theme-toggle-icon="true" aria-hidden="true">☾</span>
+                <span class="hidden md:inline" data-theme-toggle-label="true">Theme</span>
+            </button>
+            <a class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-3 py-2 text-xs font-semibold text-muted no-underline transition hover:border-accent"
+               data-other-renderer="true"
+               th:attr="data-current-renderer=${currentRenderer},aria-label=|Current renderer: ${currentRenderer}. Switch to ${otherRenderer}|"
+               th:href="${otherRendererUrl}">
+                <span class="hidden text-subtle md:inline">Renderer</span>
+                <span class="text-primary" th:text="${currentRenderer}">Thymeleaf</span>
+                <span class="text-subtle" aria-hidden="true">→</span>
+                <span class="text-accent" th:text="${otherRenderer}">Compose HTML</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<footer class="border-t border-line" th:fragment="footer">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-8 text-xs text-subtle sm:flex-row sm:items-center sm:justify-between">
+        <p>One Spring model. Two server-side HTML renderers.</p>
+        <p>Live data: klibs.io MCP / searchProjects</p>
+    </div>
+</footer>
+</body>
+</html>

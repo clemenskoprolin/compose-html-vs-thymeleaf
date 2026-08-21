@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section class="max-w-3xl" th:fragment="searchHero(query, formAction)">
+    <p class="mb-5 text-sm font-bold uppercase tracking-[0.22em] text-accent">Kotlin Multiplatform, indexed</p>
+    <h1 class="text-4xl font-black leading-tight tracking-tight text-primary sm:text-6xl">Find the library that gets you to the interesting part.</h1>
+    <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">Search verified project and package metadata from klibs.io through its public MCP server.</p>
+
+    <form class="mt-9 flex flex-col gap-3 rounded-2xl border border-line bg-surface-raised p-3 shadow-2xl shadow-shadow sm:flex-row"
+          method="get" th:action="${formAction}">
+        <input class="min-w-0 flex-1 rounded-xl border border-line bg-input px-5 py-3.5 text-base text-primary outline-none placeholder:text-subtle focus:border-accent"
+               type="search" name="query" th:value="${query}"
+               placeholder="Try html, navigation, database…"
+               aria-label="Search Kotlin Multiplatform projects">
+        <button class="rounded-xl bg-accent-solid px-7 py-3.5 text-sm font-black text-accent-ink transition hover:bg-accent-hover"
+                type="submit">Search projects</button>
+    </form>
+</section>
+
+<div class="mt-8 rounded-2xl border border-warning-line bg-warning-soft px-5 py-4 text-sm text-warning"
+     role="status"
+     th:fragment="warningBanner(message)"
+     th:if="${message != null}"
+     th:text="${message}"></div>
+
+<section class="mt-14" th:fragment="projectCatalog(projects, status)">
+    <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-secondary">Catalog</p>
+            <h2 class="mt-2 text-2xl font-black text-primary">Projects worth opening</h2>
+        </div>
+        <p class="text-sm text-subtle" th:text="${status}"></p>
+    </div>
+
+    <div class="rounded-3xl border border-dashed border-line-strong px-6 py-14 text-center text-subtle"
+         th:if="${#lists.isEmpty(projects)}">Try a broader search term.</div>
+
+    <div class="grid gap-5 lg:grid-cols-2" th:unless="${#lists.isEmpty(projects)}">
+        <th:block th:each="project : ${projects}">
+            <article th:replace="~{fragments/catalog :: projectCard(project=${project})}"></article>
+        </th:block>
+    </div>
+</section>
+
+<article class="group flex min-w-0 h-full flex-col rounded-3xl border border-line bg-card p-6 transition hover:-translate-y-0.5 hover:border-accent-line hover:bg-card-hover"
+         th:fragment="projectCard(project)">
+    <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-[0.16em] text-subtle" th:text="${project.author}"></p>
+            <h3 class="mt-2 break-words text-2xl font-black text-primary" th:text="${project.name}"></h3>
+        </div>
+        <a class="rounded-full border border-line px-3 py-1.5 text-xs font-bold text-accent no-underline group-hover:border-accent-line"
+           th:href="${project.url}" target="_blank" rel="noreferrer">klibs.io ↗</a>
+    </div>
+
+    <p class="mt-4 grow text-sm leading-6 text-muted" th:text="${project.description}"></p>
+
+    <div class="mt-5 flex flex-wrap gap-2">
+        <span class="rounded-full bg-secondary-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-secondary"
+              th:each="platform : ${project.displayedPlatforms}"
+              th:text="${platform}"></span>
+    </div>
+
+    <div class="mt-6 space-y-2 border-t border-line pt-5">
+        <div class="flex min-w-0 items-center justify-between gap-4 rounded-xl bg-code px-3 py-2.5"
+             th:each="packageInfo : ${project.displayedPackages}">
+            <code class="min-w-0 truncate text-xs text-muted" th:text="${packageInfo.coordinate}"></code>
+            <span class="shrink-0 text-xs font-bold text-accent" th:text="${packageInfo.displayVersion}"></span>
+        </div>
+        <p class="pt-1 text-xs text-subtle" th:if="${project.additionalPackageCount > 0}">
+            +<span th:text="${project.additionalPackageCount}"></span> more packages
+        </p>
+    </div>
+</article>
+</body>
+</html>

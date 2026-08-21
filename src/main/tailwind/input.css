@@ -1,0 +1,119 @@
+@import "tailwindcss" source(none);
+
+@source "../kotlin";
+@source "../resources/templates";
+
+@theme {
+    --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --color-canvas: var(--theme-canvas);
+    --color-surface: var(--theme-surface);
+    --color-surface-raised: var(--theme-surface-raised);
+    --color-input: var(--theme-input);
+    --color-card: var(--theme-card);
+    --color-card-hover: var(--theme-card-hover);
+    --color-code: var(--theme-code);
+    --color-primary: var(--theme-primary);
+    --color-muted: var(--theme-muted);
+    --color-subtle: var(--theme-subtle);
+    --color-line: var(--theme-line);
+    --color-line-strong: var(--theme-line-strong);
+    --color-accent: var(--theme-accent);
+    --color-accent-solid: var(--theme-accent-solid);
+    --color-accent-hover: var(--theme-accent-hover);
+    --color-accent-ink: var(--theme-accent-ink);
+    --color-accent-line: var(--theme-accent-line);
+    --color-secondary: var(--theme-secondary);
+    --color-secondary-soft: var(--theme-secondary-soft);
+    --color-warning: var(--theme-warning);
+    --color-warning-soft: var(--theme-warning-soft);
+    --color-warning-line: var(--theme-warning-line);
+    --color-shadow: var(--theme-shadow);
+}
+
+@layer base {
+    :root,
+    :root[data-theme="light"] {
+        color-scheme: light;
+        --theme-canvas: #f6f8f2;
+        --theme-surface: #ffffff;
+        --theme-surface-raised: rgb(255 255 255 / 0.82);
+        --theme-input: #fbfcf9;
+        --theme-card: rgb(255 255 255 / 0.9);
+        --theme-card-hover: #ffffff;
+        --theme-code: #eff3e9;
+        --theme-primary: #172012;
+        --theme-muted: #4d5b47;
+        --theme-subtle: #71806a;
+        --theme-line: #dde4d7;
+        --theme-line-strong: #c8d3bf;
+        --theme-accent: #426b0b;
+        --theme-accent-solid: #a5db46;
+        --theme-accent-hover: #94cc34;
+        --theme-accent-ink: #162207;
+        --theme-accent-line: #9acb49;
+        --theme-secondary: #17607d;
+        --theme-secondary-soft: #e3f3f9;
+        --theme-warning: #704400;
+        --theme-warning-soft: #fff5d8;
+        --theme-warning-line: #e6c771;
+        --theme-shadow: rgb(42 61 24 / 0.12);
+        --theme-glow-primary: rgb(165 219 70 / 0.2);
+        --theme-glow-secondary: rgb(56 189 248 / 0.14);
+    }
+
+    :root[data-theme="dark"] {
+        color-scheme: dark;
+        --theme-canvas: #07111f;
+        --theme-surface: #0d1928;
+        --theme-surface-raised: rgb(255 255 255 / 0.05);
+        --theme-input: rgb(2 6 23 / 0.8);
+        --theme-card: rgb(255 255 255 / 0.045);
+        --theme-card-hover: rgb(255 255 255 / 0.065);
+        --theme-code: rgb(2 6 23 / 0.6);
+        --theme-primary: #f8fafc;
+        --theme-muted: #cbd5e1;
+        --theme-subtle: #94a3b8;
+        --theme-line: rgb(255 255 255 / 0.1);
+        --theme-line-strong: rgb(255 255 255 / 0.15);
+        --theme-accent: #b8f04a;
+        --theme-accent-solid: #b8f04a;
+        --theme-accent-hover: #d9f99d;
+        --theme-accent-ink: #07111f;
+        --theme-accent-line: rgb(184 240 74 / 0.4);
+        --theme-secondary: #bae6fd;
+        --theme-secondary-soft: rgb(125 211 252 / 0.1);
+        --theme-warning: #fef3c7;
+        --theme-warning-soft: rgb(252 211 77 / 0.1);
+        --theme-warning-line: rgb(252 211 77 / 0.25);
+        --theme-shadow: rgb(0 0 0 / 0.2);
+        --theme-glow-primary: rgb(184 240 74 / 0.12);
+        --theme-glow-secondary: rgb(56 189 248 / 0.12);
+    }
+
+    html {
+        background: var(--theme-canvas);
+    }
+
+    body {
+        transition: background-color 180ms ease, color 180ms ease;
+    }
+
+    ::selection {
+        background: color-mix(in oklab, var(--theme-accent-solid) 40%, transparent);
+        color: var(--theme-primary);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        body {
+            transition: none;
+        }
+    }
+}
+
+@layer components {
+    .page-glow {
+        background-image:
+            radial-gradient(circle at 12% 8%, var(--theme-glow-primary), transparent 24rem),
+            radial-gradient(circle at 88% 18%, var(--theme-glow-secondary), transparent 28rem);
+    }
+}
