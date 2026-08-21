@@ -4,6 +4,7 @@ import com.example.htmlcomparison.catalog.CatalogPage
 import com.example.htmlcomparison.catalog.ProjectCard
 import com.example.htmlcomparison.catalog.ProjectCategory
 import com.example.htmlcomparison.catalog.ProjectPackage
+import com.example.htmlcomparison.catalog.ProjectPage
 import com.example.htmlcomparison.catalog.RankedProject
 import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
@@ -25,6 +26,31 @@ internal fun projectWithOverflowingMetadata() = ProjectCard(
         )
     },
     totalPackages = 6,
+)
+
+internal fun detailedTestProject() = ProjectCard(
+    name = "compose-multiplatform",
+    author = "JetBrains",
+    description = "Share declarative interfaces across platforms.",
+    url = "https://klibs.io/project/JetBrains/compose-multiplatform",
+    platforms = listOf("androidJvm", "common", "js", "jvm", "native", "wasm"),
+    targets = listOf("ANDROIDJVM_1.8", "ANDROIDJVM_11", "COMMON", "JS", "JVM_17", "NATIVE_ios_arm64", "WASM"),
+    packages = listOf(
+        ProjectPackage(
+            groupId = "org.jetbrains.compose.runtime",
+            artifactId = "runtime",
+            latestVersion = "1.12.0-rc01",
+            latestStableVersion = "1.10.1",
+            description = "The Compose runtime.",
+        ),
+        ProjectPackage(
+            groupId = "org.jetbrains.compose.foundation",
+            artifactId = "foundation",
+            latestVersion = "1.10.1",
+            latestStableVersion = "1.10.1",
+        ),
+    ),
+    totalPackages = 109,
 )
 
 internal fun featuredTestCategories(): List<ProjectCategory> = listOf(
@@ -76,5 +102,18 @@ internal object ThymeleafTestRenderer {
             setVariable("otherRendererUrl", otherRendererUrl)
         }
         return templateEngine.process("catalog", context)
+    }
+
+    fun renderProject(
+        projectPage: ProjectPage,
+        formAction: String,
+        otherRendererUrl: String,
+    ): String {
+        val context = Context().apply {
+            setVariable("projectPage", projectPage)
+            setVariable("formAction", formAction)
+            setVariable("otherRendererUrl", otherRendererUrl)
+        }
+        return templateEngine.process("project", context)
     }
 }

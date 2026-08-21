@@ -1,6 +1,9 @@
 package com.example.htmlcomparison.web
 
 import com.example.htmlcomparison.catalog.CatalogPage
+import com.example.htmlcomparison.catalog.ProjectPage
+import com.example.htmlcomparison.catalog.ProjectReadme
+import com.example.htmlcomparison.catalog.ProjectTab
 import com.example.htmlcomparison.web.compose.ComposeHtmlPageRenderer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -44,6 +47,87 @@ class RendererParityTest {
                 status = "No projects found.",
                 warning = "The live klibs.io MCP search is temporarily unavailable.",
             )
+        )
+    }
+
+    @Test
+    fun `both renderers agree on a platform-filtered search page`() {
+        assertSameDocument(
+            CatalogPage(
+                query = "html",
+                projects = listOf(projectWithOverflowingMetadata()),
+                status = "1 project found on JVM, Wasm",
+                platforms = listOf("jvm", "wasm"),
+                topTags = listOf("compose", "html"),
+            )
+        )
+    }
+
+    @Test
+    fun `both renderers agree on a project detail page`() {
+        assertSameProject(
+            ProjectPage(
+                author = "JetBrains",
+                name = "compose-multiplatform",
+                project = detailedTestProject(),
+            )
+        )
+    }
+
+    @Test
+    fun `both renderers agree on a rendered readme`() {
+        // Compose replays the markup as composables while Thymeleaf writes it with th:utext.
+        assertSameProject(
+            ProjectPage(
+                author = "JetBrains",
+                name = "compose-multiplatform",
+                project = detailedTestProject(),
+                readme = ProjectReadme(
+                    html = """<h1>Compose Multiplatform</h1><p>Share <strong>UI</strong> code &amp; more.</p>""" +
+                        """<ul><li><a href="https://example.com" target="_blank" rel="noreferrer">iOS</a></li></ul>""" +
+                        """<pre><code class="language-kotlin">fun main() {\n    println("hi")\n}\n</code></pre>""" +
+                        """<img src="https://example.com/shot.png" alt="Screen shot" loading="lazy">""" +
+                        """<table><thead><tr><th>Target</th></tr></thead><tbody><tr><td>JVM</td></tr></tbody></table>""",
+                    sourceUrl = "https://github.com/JetBrains/compose-multiplatform/blob/HEAD/README.md",
+                    fileName = "README.md",
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun `both renderers agree on the packages tab`() {
+        assertSameProject(
+            ProjectPage(
+                author = "JetBrains",
+                name = "compose-multiplatform",
+                project = detailedTestProject(),
+                tab = ProjectTab.PACKAGES,
+                backParameters = "query=compose&platforms=wasm",
+            )
+        )
+    }
+
+    @Test
+    fun `both renderers agree on a project the MCP server does not know`() {
+        assertSameProject(
+            ProjectPage(
+                author = "Nobody",
+                name = "nothing",
+                warning = "klibs.io has no project called \u201cNobody/nothing\u201d.",
+            )
+        )
+    }
+
+    private fun assertSameProject(projectPage: ProjectPage) {
+        val composeHtml = composeHtmlPageRenderer
+            .renderProject(projectPage, FORM_ACTION, OTHER_RENDERER_URL)
+        val thymeleafHtml = ThymeleafTestRenderer
+            .renderProject(projectPage, FORM_ACTION, OTHER_RENDERER_URL)
+
+        assertEquals(
+            HtmlNormalizer.normalize(withoutRendererIdentity(composeHtml)),
+            HtmlNormalizer.normalize(withoutRendererIdentity(thymeleafHtml)),
         )
     }
 

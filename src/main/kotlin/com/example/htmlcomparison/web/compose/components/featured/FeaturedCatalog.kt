@@ -1,6 +1,7 @@
 package com.example.htmlcomparison.web.compose.components.featured
 
 import androidx.compose.runtime.Composable
+import com.example.htmlcomparison.catalog.CatalogPage
 import com.example.htmlcomparison.catalog.ProjectCategory
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
@@ -10,10 +11,13 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-internal fun FeaturedCatalog(categories: List<ProjectCategory>) {
+internal fun FeaturedCatalog(
+    page: CatalogPage,
+    formAction: String,
+) {
     Div {
-        categories.forEachIndexed { index, category ->
-            CategorySection(category)
+        page.categories.forEachIndexed { index, category ->
+            CategorySection(category, page, formAction)
             if (index == 0) {
                 GrantBanner()
             }
@@ -22,7 +26,11 @@ internal fun FeaturedCatalog(categories: List<ProjectCategory>) {
 }
 
 @Composable
-private fun CategorySection(category: ProjectCategory) {
+private fun CategorySection(
+    category: ProjectCategory,
+    page: CatalogPage,
+    formAction: String,
+) {
     Section({
         classes("mt-14", "sm:mt-20")
         attr("data-category", category.slug)
@@ -38,7 +46,9 @@ private fun CategorySection(category: ProjectCategory) {
             }
         }
         Div({ classes("grid", "gap-4", "sm:grid-cols-2", "lg:grid-cols-3") }) {
-            category.projects.forEach { project -> RankedProjectCard(project) }
+            category.projects.forEach { project ->
+                RankedProjectCard(project, page.projectUrl(formAction, project.author, project.name))
+            }
         }
     }
 }

@@ -50,9 +50,8 @@ class ThymeleafCatalogTemplateTest {
         assertTrue(html.contains("value=\"&lt;html &amp; css&gt;\""), html)
         assertTrue(html.contains("platform-6"))
         assertFalse(html.contains("platform-7"))
-        assertTrue(html.contains("example:package-3"))
-        assertFalse(html.contains("example:package-4"))
-        assertTrue(html.contains("+3 more packages"), html)
+        assertFalse(html.contains("package-1"), html)
+        assertFalse(html.contains("6 packages"), html)
     }
 
     @Test
@@ -102,10 +101,34 @@ class ThymeleafCatalogTemplateTest {
         assertTrue(html.contains("Share declarative interfaces across platforms."), html)
         assertTrue(html.contains("#compose-ui"), html)
         assertTrue(html.contains("Kotlin/Native"), html)
-        assertFalse(html.contains(">Platforms<"), html)
         assertFalse(html.contains("Apache License 2.0"), html)
         assertTrue(html.contains("Kotlin Grant Winners"), html)
         assertTrue(html.indexOf("Compose UI") < html.indexOf("Kotlin Grant Winners"), html)
         assertTrue(html.indexOf("Kotlin Grant Winners") < html.indexOf("Local Storage"), html)
+    }
+
+    @Test
+    fun `renders a GET search form with immediately applied platform links`() {
+        val html = ThymeleafTestRenderer.render(
+            page = CatalogPage(
+                query = "compose",
+                projects = emptyList(),
+                status = "No projects found",
+                platforms = listOf("wasm"),
+                topTags = listOf("compose", "apple"),
+            ),
+            formAction = "/thymeleaf",
+            otherRendererUrl = "/composehtml",
+        )
+
+        assertTrue(html.contains("id=\"catalog-results\""), html)
+        assertTrue(html.contains("action=\"/thymeleaf\""), html)
+        assertTrue(html.contains("method=\"get\""), html)
+        assertFalse(html.contains("/app.js"), html)
+        assertTrue(html.contains("type=\"hidden\" name=\"platforms\" value=\"wasm\""), html)
+        assertFalse(html.contains("type=\"checkbox\""), html)
+        assertTrue(html.contains("href=\"/thymeleaf?query=compose\""), html)
+        assertTrue(html.contains("href=\"/thymeleaf?query=compose&amp;platforms=jvm&amp;platforms=wasm\""), html)
+        assertTrue(html.contains("href=\"/thymeleaf?query=apple&amp;platforms=wasm\""), html)
     }
 }

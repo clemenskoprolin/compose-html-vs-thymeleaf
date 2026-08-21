@@ -49,9 +49,8 @@ class ComposeHtmlPageRendererTest {
 
         assertTrue(html.contains("platform-6"))
         assertFalse(html.contains("platform-7"))
-        assertTrue(html.contains("example:package-3"))
-        assertFalse(html.contains("example:package-4"))
-        assertTrue(html.contains("+3 more packages"))
+        assertFalse(html.contains("package-1"), html)
+        assertFalse(html.contains("6 packages"), html)
     }
 
     @Test
@@ -96,10 +95,35 @@ class ComposeHtmlPageRendererTest {
         assertTrue(html.contains("Share declarative interfaces across platforms."), html)
         assertTrue(html.contains("#compose-ui"), html)
         assertTrue(html.contains("Kotlin/Native"), html)
-        assertFalse(html.contains(">Platforms<"), html)
         assertFalse(html.contains("Apache License 2.0"), html)
         assertTrue(html.contains("Kotlin Grant Winners"), html)
         assertTrue(html.indexOf("Compose UI") < html.indexOf("Kotlin Grant Winners"), html)
         assertTrue(html.indexOf("Kotlin Grant Winners") < html.indexOf("Local Storage"), html)
+    }
+
+    @Test
+    fun `renders a GET search form with immediately applied platform links`() {
+        val html = renderer.render(
+            page = CatalogPage(
+                query = "compose",
+                projects = emptyList(),
+                status = "No projects found",
+                platforms = listOf("wasm"),
+                topTags = listOf("compose", "apple"),
+            ),
+            formAction = "/composehtml",
+            otherRendererUrl = "/thymeleaf",
+        )
+
+        assertTrue(html.contains("id=\"catalog-results\""), html)
+        assertTrue(html.contains("action=\"/composehtml\""), html)
+        assertTrue(html.contains("method=\"get\""), html)
+        assertFalse(html.contains("/app.js"), html)
+        // The form keeps the filter for text searches, while filter links toggle immediately.
+        assertTrue(html.contains("type=\"hidden\" name=\"platforms\" value=\"wasm\""), html)
+        assertFalse(html.contains("type=\"checkbox\""), html)
+        assertTrue(html.contains("href=\"/composehtml?query=compose\""), html)
+        assertTrue(html.contains("href=\"/composehtml?query=compose&amp;platforms=jvm&amp;platforms=wasm\""), html)
+        assertTrue(html.contains("href=\"/composehtml?query=apple&amp;platforms=wasm\""), html)
     }
 }

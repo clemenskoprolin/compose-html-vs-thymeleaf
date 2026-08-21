@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="featuredCatalog(categories)">
-    <th:block th:each="category, categoryStat : ${categories}">
+<div th:fragment="featuredCatalog(page, formAction)">
+    <th:block th:each="category, categoryStat : ${page.categories}">
         <section class="mt-14 sm:mt-20" th:attr="data-category=${category.slug}">
             <div class="mb-6 flex items-end justify-between gap-4">
                 <h2 class="text-2xl font-black tracking-tight text-primary" th:text="${category.title}"></h2>
@@ -13,7 +13,7 @@
                 <a class="group flex h-full min-w-0 flex-col justify-between gap-5 rounded-2xl border bg-card p-4 no-underline transition hover:-translate-y-0.5 hover:border-accent-line hover:bg-card-hover"
                    th:classappend="${project.grantWinner} ? 'border-accent-line' : 'border-line'"
                    th:each="project : ${category.projects}"
-                   th:href="${project.url}"
+                   th:href="${page.projectUrl(formAction, project.author, project.name)}"
                    th:attr="data-star-count=${project.stars}">
                     <div>
                         <div class="flex items-start justify-between gap-4">
@@ -25,7 +25,7 @@
                                 <span class="text-accent" aria-hidden="true">★</span><th:block th:text="${project.stars}"></th:block>
                             </p>
                         </div>
-                        <p class="ranked-project-description mt-3 text-sm leading-6 text-muted"
+                        <p class="project-card-description mt-3 text-sm leading-6 text-muted"
                            th:if="${!project.description.isBlank()}" th:text="${project.description}"></p>
                         <p class="mt-3 inline-flex rounded-full bg-secondary-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-secondary"
                            th:if="${project.grantWinner}">Kotlin Grant winner</p>
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                     <p class="flex items-center justify-between text-xs font-bold text-accent">
-View on klibs.io<span aria-hidden="true">↗</span>
+View details<span aria-hidden="true">↗</span>
                     </p>
                 </a>
             </div>

@@ -5,11 +5,9 @@ import org.springframework.stereotype.Service
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.json.JsonMapper
 import java.net.URI
-import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicLong
 
@@ -28,18 +26,36 @@ class KlibsMcpClient(
     @Volatile
     private var currentSession: McpSession? = null
 
-    override fun searchProjects(query: String): List<ProjectCard> {
+    override fun searchProjects(query: String, platforms: List<String>): List<ProjectCard> =
+        search(query, platforms, CATALOG_PACKAGES)
+
+    /**
+     * The MCP server has no lookup by coordinate, so the project is located by searching for
+     * its name and matching the pair back up. Detail pages ask for far more packages.
+     */
+    override fun findProject(author: String, name: String): ProjectCard? =
+        search(name, platforms = emptyList(), maxPackagesPerProject = DETAIL_PACKAGES)
+            .firstOrNull { it.name.equals(name, ignoreCase = true) && it.author.equals(author, ignoreCase = true) }
+
+    private fun search(
+        query: String,
+        platforms: List<String>,
+        maxPackagesPerProject: Int,
+    ): List<ProjectCard> {
         val session = session()
+        val arguments = buildMap<String, Any> {
+            put("query", query)
+            put("maxPackagesPerProject", maxPackagesPerProject)
+            // The server narrows to projects that support every listed platform.
+            if (platforms.isNotEmpty()) put("platforms", platforms)
+        }
         val request = mapOf(
             "jsonrpc" to "2.0",
             "id" to requestIds.incrementAndGet(),
             "method" to "tools/call",
             "params" to mapOf(
                 "name" to "searchProjects",
-                "arguments" to mapOf(
-                    "query" to query,
-                    "maxPackagesPerProject" to 3,
-                ),
+                "arguments" to arguments,
             ),
         )
 
@@ -73,14 +89,16 @@ class KlibsMcpClient(
                 name = name,
                 author = author,
                 description = project.nullableText("description") ?: "No project description is available yet.",
-                url = "https://klibs.io/project/${author.urlSegment()}/${name.urlSegment()}",
+                url = klibsProjectUrl(author, name),
                 platforms = project.path("platforms").children().map(JsonNode::asString),
+                targets = project.path("targets").children().map(JsonNode::asString),
                 packages = project.path("packages").children().map { packageNode ->
                     ProjectPackage(
                         groupId = packageNode.requiredText("groupId"),
                         artifactId = packageNode.requiredText("artifactId"),
                         latestVersion = packageNode.requiredText("latestVersion"),
                         latestStableVersion = packageNode.nullableText("latestStableVersion"),
+                        description = packageNode.nullableText("description").orEmpty(),
                     )
                 },
                 totalPackages = project.path("totalPackages").asInt(),
@@ -181,9 +199,6 @@ class KlibsMcpClient(
 
     private fun JsonNode.children(): List<JsonNode> = iterator().asSequence().toList()
 
-    private fun String.urlSegment(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
-        .replace("+", "%20")
-
     private data class McpSession(
         val protocolVersion: String,
         val sessionId: String?,
@@ -196,5 +211,7 @@ class KlibsMcpClient(
 
     companion object {
         private const val PROTOCOL_VERSION = "2025-06-18"
+        private const val CATALOG_PACKAGES = 3
+        private const val DETAIL_PACKAGES = 50
     }
 }

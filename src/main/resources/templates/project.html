@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${projectPage.name + ' — KMP Library Finder'}">KMP Library Finder</title>
+    <link rel="stylesheet" href="/app.css">
+    <script src="/theme.js"></script>
+</head>
+<body class="min-h-screen bg-canvas font-sans text-primary antialiased" data-renderer="thymeleaf">
+<div class="page-glow fixed inset-0 -z-10"></div>
+
+<header th:replace="~{fragments/site :: header(homeUrl=${formAction}, otherRendererUrl=${otherRendererUrl}, currentRenderer='Thymeleaf')}"></header>
+
+<main class="mx-auto max-w-6xl px-6 py-14 sm:py-20">
+    <nav th:replace="~{fragments/project :: breadcrumb}"></nav>
+    <h1 class="mt-4 break-words text-4xl font-black leading-tight tracking-tight text-primary sm:text-5xl"
+        th:text="${projectPage.name}"></h1>
+    <div th:replace="~{fragments/catalog :: warningBanner(message=${projectPage.warning})}"></div>
+
+    <th:block th:if="${projectPage.project == null}">
+        <section th:replace="~{fragments/project :: missingProject}"></section>
+    </th:block>
+
+    <th:block th:unless="${projectPage.project == null}">
+        <div class="mt-8 grid gap-6 lg:grid-cols-3 lg:items-start" th:with="project=${projectPage.project}">
+            <div class="space-y-6 lg:col-span-2">
+                <section th:replace="~{fragments/project :: description(project=${project})}"></section>
+                <nav th:replace="~{fragments/project :: tabs}"></nav>
+                <th:block th:if="${projectPage.tab.id == 'readme'}">
+                    <section th:replace="~{fragments/project :: readme}"></section>
+                </th:block>
+                <th:block th:if="${projectPage.tab.id == 'packages'}">
+                    <section th:replace="~{fragments/project :: packages(project=${project})}"></section>
+                </th:block>
+            </div>
+            <aside class="space-y-6">
+                <div th:replace="~{fragments/project :: platforms(project=${project})}"></div>
+                <section th:replace="~{fragments/project :: metadata(project=${project})}"></section>
+                <section th:replace="~{fragments/project :: targets(project=${project})}"></section>
+            </aside>
+        </div>
+    </th:block>
+</main>
+
+<footer th:replace="~{fragments/site :: footer}"></footer>
+</body>
+</html>

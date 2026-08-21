@@ -10,9 +10,12 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-internal fun RankedProjectCard(project: RankedProject) {
+internal fun RankedProjectCard(
+    project: RankedProject,
+    href: String,
+) {
     A(
-        href = project.url,
+        href = href,
         attrs = {
             classes("group", "flex", "h-full", "min-w-0", "flex-col", "justify-between", "gap-5", "rounded-2xl", "border", if (project.grantWinner) "border-accent-line" else "border-line", "bg-card", "p-4", "no-underline", "transition", "hover:-translate-y-0.5", "hover:border-accent-line", "hover:bg-card-hover")
             attr("data-star-count", project.stars)
@@ -21,7 +24,7 @@ internal fun RankedProjectCard(project: RankedProject) {
         Div {
             ProjectHeading(project)
             if (project.description.isNotBlank()) {
-                P({ classes("ranked-project-description", "mt-3", "text-sm", "leading-6", "text-muted") }) { Text(project.description) }
+                P({ classes("project-card-description", "mt-3", "text-sm", "leading-6", "text-muted") }) { Text(project.description) }
             }
             if (project.grantWinner) {
                 P({ classes("mt-3", "inline-flex", "rounded-full", "bg-secondary-soft", "px-2.5", "py-1", "text-[11px]", "font-bold", "uppercase", "tracking-wide", "text-secondary") }) {
@@ -32,7 +35,7 @@ internal fun RankedProjectCard(project: RankedProject) {
             ProjectMetadata(project)
         }
         P({ classes("flex", "items-center", "justify-between", "text-xs", "font-bold", "text-accent") }) {
-            Text("View on klibs.io")
+            Text("View details")
             Span({ attr("aria-hidden", "true") }) { Text("\u2197") }
         }
     }

@@ -27,7 +27,6 @@
                       th:attr="data-current-renderer=${currentRenderer}">Compose HTML</span>
                 <a class="rounded-full px-3 py-1.5 text-xs font-semibold text-muted no-underline transition hover:text-primary"
                    th:unless="${currentRenderer == 'Compose HTML'}"
-                   data-other-renderer="true"
                    th:href="${otherRendererUrl}"
                    aria-label="Switch to Compose HTML">Compose HTML</a>
 
@@ -37,7 +36,6 @@
                       th:attr="data-current-renderer=${currentRenderer}">Thymeleaf</span>
                 <a class="rounded-full px-3 py-1.5 text-xs font-semibold text-muted no-underline transition hover:text-primary"
                    th:unless="${currentRenderer == 'Thymeleaf'}"
-                   data-other-renderer="true"
                    th:href="${otherRendererUrl}"
                    aria-label="Switch to Thymeleaf">Thymeleaf</a>
             </div>

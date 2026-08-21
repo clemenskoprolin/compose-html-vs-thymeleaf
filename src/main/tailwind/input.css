@@ -118,6 +118,12 @@
         background: var(--theme-brand-plate);
     }
 
+    /* A live search keeps the previous results visible while the next ones are fetched. */
+    #catalog-results[aria-busy="true"] {
+        opacity: 0.55;
+        transition: opacity 120ms ease;
+    }
+
     .page-glow {
         background-image:
             radial-gradient(circle at 12% 8%, var(--theme-glow-primary), transparent 24rem),
@@ -150,7 +156,137 @@
         }
     }
 
-    .ranked-project-description {
+    /* Prose styles for the rendered README, kept on the page's own tokens. */
+    .readme {
+        color: var(--theme-muted);
+        font-size: 0.95rem;
+        line-height: 1.75;
+        overflow-wrap: anywhere;
+    }
+
+    .readme > :first-child {
+        margin-top: 0;
+    }
+
+    .readme h1,
+    .readme h2,
+    .readme h3,
+    .readme h4,
+    .readme h5,
+    .readme h6 {
+        color: var(--theme-primary);
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        line-height: 1.25;
+        margin: 2rem 0 0.75rem;
+    }
+
+    .readme h1 { font-size: 1.875rem; }
+    .readme h2 { font-size: 1.5rem; }
+    .readme h3 { font-size: 1.25rem; }
+    .readme h4,
+    .readme h5,
+    .readme h6 { font-size: 1rem; }
+
+    .readme h1,
+    .readme h2 {
+        border-bottom: 1px solid var(--theme-line);
+        padding-bottom: 0.5rem;
+    }
+
+    .readme p,
+    .readme ul,
+    .readme ol,
+    .readme blockquote,
+    .readme table,
+    .readme pre {
+        margin: 1rem 0;
+    }
+
+    .readme ul,
+    .readme ol {
+        padding-left: 1.5rem;
+    }
+
+    .readme ul { list-style: disc; }
+    .readme ol { list-style: decimal; }
+    .readme li { margin: 0.35rem 0; }
+    .readme li::marker { color: var(--theme-subtle); }
+
+    .readme a {
+        color: var(--theme-accent);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .readme a:hover {
+        color: var(--theme-primary);
+        text-decoration: underline;
+    }
+
+    .readme strong { color: var(--theme-primary); font-weight: 700; }
+
+    .readme code {
+        background: var(--theme-code);
+        border-radius: 0.375rem;
+        font-size: 0.85em;
+        padding: 0.15rem 0.35rem;
+    }
+
+    .readme pre {
+        background: var(--theme-code);
+        border: 1px solid var(--theme-line);
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        padding: 1rem;
+    }
+
+    .readme pre code {
+        background: none;
+        font-size: 0.85rem;
+        padding: 0;
+    }
+
+    .readme blockquote {
+        border-left: 3px solid var(--theme-accent-line);
+        color: var(--theme-subtle);
+        padding-left: 1rem;
+    }
+
+    .readme img {
+        display: inline-block;
+        max-width: 100%;
+        height: auto;
+        vertical-align: middle;
+    }
+
+    .readme hr {
+        border-color: var(--theme-line);
+        margin: 2rem 0;
+    }
+
+    .readme table {
+        border-collapse: collapse;
+        display: block;
+        overflow-x: auto;
+        width: max-content;
+        max-width: 100%;
+    }
+
+    .readme th,
+    .readme td {
+        border: 1px solid var(--theme-line);
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+    }
+
+    .readme th {
+        background: var(--theme-code);
+        color: var(--theme-primary);
+        font-weight: 700;
+    }
+
+    .project-card-description {
         display: -webkit-box;
         min-height: 4.5rem;
         overflow: hidden;

@@ -52,7 +52,6 @@ private fun OtherRenderer(
         href = otherRendererUrl,
         attrs = {
             classes("rounded-full", "px-3", "py-1.5", "text-xs", "font-semibold", "text-muted", "no-underline", "transition", "hover:text-primary")
-            attr("data-other-renderer", "true")
             attr("aria-label", "Switch to $renderer")
         },
     ) {

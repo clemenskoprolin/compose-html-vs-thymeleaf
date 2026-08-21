@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="breadcrumb" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-subtle">
+        <li>
+            <a class="text-accent no-underline transition hover:text-primary"
+               th:href="${projectPage.backUrl(formAction)}">Catalog</a>
+        </li>
+        <li class="flex items-center gap-2">
+            <span aria-hidden="true">/</span><span th:text="${projectPage.author}"></span>
+        </li>
+        <li class="flex items-center gap-2">
+            <span aria-hidden="true">/</span><span class="text-primary" aria-current="page" th:text="${projectPage.name}"></span>
+        </li>
+    </ol>
+</nav>
+
+<!--/* The description card klibs.io puts above the tabs. */-->
+<section class="rounded-3xl border border-line bg-card p-6" th:fragment="description(project)">
+    <p class="text-base leading-7 text-muted" th:text="${project.description}"></p>
+    <div class="mt-6 flex flex-wrap gap-3">
+        <a class="inline-flex items-center gap-2 rounded-full border border-accent bg-accent-solid px-5 py-2.5 text-sm font-bold text-accent-ink no-underline transition hover:-translate-y-0.5"
+           th:href="${project.url}" target="_blank" rel="noreferrer">View on klibs.io<span aria-hidden="true">↗</span></a>
+        <a class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-5 py-2.5 text-sm font-bold text-primary no-underline transition hover:-translate-y-0.5"
+           th:href="${project.repositoryUrl}" target="_blank" rel="noreferrer">GitHub repository<span aria-hidden="true">↗</span></a>
+        <a class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-5 py-2.5 text-sm font-bold text-primary no-underline transition hover:-translate-y-0.5"
+           th:href="${project.suggestEditUrl}" target="_blank" rel="noreferrer">Suggest an edit<span aria-hidden="true">↗</span></a>
+    </div>
+</section>
+
+<!--/* klibs.io switches these with JavaScript; here each tab is its own server-rendered URL. */-->
+<nav class="flex gap-1 border-b border-line" th:fragment="tabs" aria-label="Project sections">
+    <a class="-mb-px border-b-2 px-4 py-3 text-sm font-bold no-underline transition"
+       th:each="tab : ${projectPage.tabs}"
+       th:classappend="${projectPage.isSelected(tab) ? 'border-accent text-primary' : 'border-transparent text-subtle hover:text-primary'}"
+       th:href="${projectPage.tabUrl(formAction, tab)}"
+       th:attr="aria-current=${projectPage.isSelected(tab) ? 'page' : null}"
+       th:text="${tab.label}"></a>
+</nav>
+
+<section class="rounded-3xl border border-line bg-card p-6 sm:p-8" th:fragment="readme">
+    <p class="text-sm leading-6 text-muted"
+       th:if="${projectPage.readme == null}"
+       th:text="${projectPage.readmeNotice} ?: 'No README is available for this project.'"></p>
+
+    <th:block th:unless="${projectPage.readme == null}">
+        <div class="readme" th:utext="${projectPage.readme.html}"></div>
+        <p class="mt-8 border-t border-line pt-4 text-xs text-subtle">Rendered from <a
+                class="font-bold text-accent no-underline transition hover:text-primary"
+                th:href="${projectPage.readme.sourceUrl}" target="_blank" rel="noreferrer"
+                th:text="${projectPage.readme.fileName}"></a> on GitHub.</p>
+    </th:block>
+</section>
+
+<div class="flex flex-wrap gap-2"
+     th:fragment="platforms(project)"
+     th:if="${!project.displayedPlatforms.isEmpty()}"
+     aria-label="Platforms">
+    <span class="rounded-full bg-secondary-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-secondary"
+          th:each="platform : ${project.displayedPlatforms}" th:text="${platform}"></span>
+</div>
+
+<!--/* The published Kotlin targets, folded back into the platform groups klibs.io lists them under. */-->
+<section class="rounded-3xl border border-line bg-card p-6"
+         th:fragment="targets(project)"
+         th:if="${!project.targetGroups.isEmpty()}">
+    <h2 class="text-sm font-bold uppercase tracking-[0.16em] text-subtle">Targets</h2>
+    <div class="mt-4 space-y-4">
+        <div th:each="group : ${project.targetGroups}">
+            <p class="text-xs font-bold uppercase tracking-[0.16em] text-subtle" th:text="${group.label}"></p>
+            <p class="mt-2 text-sm text-muted" th:if="${group.targets.isEmpty()}">Published without a specific target.</p>
+            <div class="mt-2 flex flex-wrap gap-1.5" th:unless="${group.targets.isEmpty()}">
+                <span class="rounded-md border border-line bg-surface px-2 py-1 text-[11px] font-semibold text-muted"
+                      th:each="target : ${group.targets}" th:text="${target}"></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="rounded-3xl border border-line bg-card p-6" th:fragment="packages(project)">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+        <h2 class="text-2xl font-black tracking-tight text-primary">Packages</h2>
+        <p class="text-sm text-subtle" th:text="${project.packageSummary}"></p>
+    </div>
+
+    <p class="mt-5 text-sm text-muted" th:if="${#lists.isEmpty(project.packages)}">This project publishes no packages the MCP server knows about.</p>
+
+    <ul class="mt-5 space-y-3" th:unless="${#lists.isEmpty(project.packages)}">
+        <li class="rounded-2xl border border-line bg-surface p-4" th:each="packageInfo : ${project.packages}">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <h3 class="min-w-0 break-all text-sm font-bold text-primary" th:text="${packageInfo.coordinate}"></h3>
+                <span class="shrink-0 rounded-full bg-secondary-soft px-2.5 py-1 text-[11px] font-bold text-secondary"
+                      th:text="${packageInfo.displayVersion}"></span>
+            </div>
+            <p class="mt-2 text-sm leading-6 text-muted"
+               th:if="${!packageInfo.description.isBlank()}" th:text="${packageInfo.description}"></p>
+            <div class="mt-3 overflow-x-auto rounded-xl bg-code px-3 py-2.5">
+                <code class="whitespace-pre text-xs text-muted" th:text="${packageInfo.dependencyNotation}"></code>
+            </div>
+            <p class="mt-2 text-xs text-subtle"
+               th:if="${packageInfo.hasPrerelease}"
+               th:text="${'Prerelease available: ' + packageInfo.latestVersion}"></p>
+        </li>
+    </ul>
+</section>
+
+<!--/*
+  klibs.io also shows stars, license and activity dates here. The MCP server does not expose
+  those, so the panel says so rather than inventing them.
+*/-->
+<section class="rounded-3xl border border-line bg-card p-6" th:fragment="metadata(project)">
+    <h2 class="text-sm font-bold uppercase tracking-[0.16em] text-subtle">Metadata</h2>
+    <div class="mt-4 space-y-3 text-sm">
+        <div class="flex items-baseline justify-between gap-3">
+            <span class="text-subtle">Author</span>
+            <a class="font-bold text-accent no-underline transition hover:text-primary"
+               th:href="${project.authorUrl}" target="_blank" rel="noreferrer" th:text="${project.author}"></a>
+        </div>
+        <div class="flex items-baseline justify-between gap-3">
+            <span class="text-subtle">Platforms</span>
+            <span class="font-bold text-primary" th:text="${project.displayedPlatforms.size()}"></span>
+        </div>
+        <div class="flex items-baseline justify-between gap-3">
+            <span class="text-subtle">Targets</span>
+            <span class="font-bold text-primary" th:text="${project.targets.size()}"></span>
+        </div>
+        <div class="flex items-baseline justify-between gap-3">
+            <span class="text-subtle">Packages</span>
+            <span class="font-bold text-primary" th:text="${project.totalPackages}"></span>
+        </div>
+    </div>
+    <p class="mt-5 border-t border-line pt-4 text-xs leading-5 text-subtle">GitHub stars, license and activity dates are shown on klibs.io but are not part of the MCP searchProjects response.</p>
+</section>
+
+<section class="mt-8 rounded-3xl border border-dashed border-line-strong px-6 py-14 text-center" th:fragment="missingProject">
+    <p class="text-2xl font-black text-primary">Nothing to show for this project</p>
+    <p class="mx-auto mt-3 max-w-md text-sm leading-6 text-muted"
+       th:text="${'The klibs.io MCP server did not return ' + projectPage.author + '/' + projectPage.name + '. It may have been renamed, or the search index may not list it.'}"></p>
+    <div class="mt-7 flex flex-wrap justify-center gap-3">
+        <a class="inline-flex items-center gap-2 rounded-full border border-accent bg-accent-solid px-5 py-2.5 text-sm font-bold text-accent-ink no-underline transition hover:-translate-y-0.5"
+           th:href="${projectPage.backUrl(formAction)}">Back to the catalog</a>
+        <a class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-5 py-2.5 text-sm font-bold text-primary no-underline transition hover:-translate-y-0.5"
+           th:href="${projectPage.klibsUrl}" target="_blank" rel="noreferrer">Try klibs.io<span aria-hidden="true">↗</span></a>
+    </div>
+</section>
+</body>
+</html>

@@ -1,7 +1,7 @@
 package com.example.htmlcomparison.web.compose.components.catalog
 
 import androidx.compose.runtime.Composable
-import com.example.htmlcomparison.catalog.ProjectCard
+import com.example.htmlcomparison.catalog.CatalogPage
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.P
@@ -10,15 +10,15 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 internal fun ProjectCatalog(
-    projects: List<ProjectCard>,
-    status: String,
+    page: CatalogPage,
+    formAction: String,
 ) {
     Section({ classes("mt-14") }) {
-        CatalogHeading(status)
-        if (projects.isEmpty()) {
+        CatalogHeading(page.status)
+        if (page.projects.isEmpty()) {
             EmptyCatalog()
         } else {
-            ProjectGrid(projects)
+            ProjectGrid(page, formAction)
         }
     }
 }
@@ -42,8 +42,13 @@ private fun EmptyCatalog() {
 }
 
 @Composable
-private fun ProjectGrid(projects: List<ProjectCard>) {
-    Div({ classes("grid", "gap-5", "lg:grid-cols-2") }) {
-        projects.forEach { project -> ProjectResultCard(project) }
+private fun ProjectGrid(
+    page: CatalogPage,
+    formAction: String,
+) {
+    Div({ classes("grid", "gap-4", "sm:grid-cols-2", "lg:grid-cols-3") }) {
+        page.projects.forEach { project ->
+            ProjectResultCard(project, page.projectUrl(formAction, project.author, project.name))
+        }
     }
 }
