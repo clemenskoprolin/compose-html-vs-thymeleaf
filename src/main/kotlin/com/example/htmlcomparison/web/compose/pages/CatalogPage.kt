@@ -40,7 +40,6 @@ internal fun CatalogPageDocument(
                 homeUrl = formAction,
                 otherRendererUrl = otherRendererUrl,
                 currentRenderer = "Compose HTML",
-                otherRenderer = "Thymeleaf",
             )
             CatalogMain(page, formAction)
             SiteFooter()

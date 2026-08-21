@@ -59,6 +59,7 @@
         --theme-shadow: rgb(42 61 24 / 0.12);
         --theme-glow-primary: rgb(165 219 70 / 0.2);
         --theme-glow-secondary: rgb(56 189 248 / 0.14);
+        --theme-brand-plate: #101a0c;
     }
 
     :root[data-theme="dark"] {
@@ -88,6 +89,7 @@
         --theme-shadow: rgb(0 0 0 / 0.2);
         --theme-glow-primary: rgb(184 240 74 / 0.12);
         --theme-glow-secondary: rgb(56 189 248 / 0.12);
+        --theme-brand-plate: rgb(255 255 255 / 0.08);
     }
 
     html {
@@ -111,6 +113,11 @@
 }
 
 @layer components {
+    /* The klibs.io wordmark is white, so it needs a dark plate in the light theme too. */
+    .brand-plate {
+        background: var(--theme-brand-plate);
+    }
+
     .page-glow {
         background-image:
             radial-gradient(circle at 12% 8%, var(--theme-glow-primary), transparent 24rem),
@@ -125,18 +132,22 @@
             linear-gradient(135deg, var(--theme-surface) 0%, var(--theme-secondary-soft) 100%);
     }
 
-    .grant-banner::after {
-        position: absolute;
-        z-index: -1;
-        right: 1rem;
-        bottom: -4.5rem;
-        color: var(--theme-accent-solid);
-        content: "K";
-        font-size: clamp(11rem, 24vw, 19rem);
-        font-weight: 900;
-        line-height: 1;
-        opacity: 0.16;
-        transform: rotate(-8deg);
+    /* The official Kodee grant artwork sits on the banner floor instead of a letterform. */
+    .grant-figure {
+        display: block;
+        width: 100%;
+        max-width: 24rem;
+        margin: 2.5rem auto 0;
+    }
+
+    @media (min-width: 1024px) {
+        .grant-figure {
+            position: absolute;
+            right: 1.75rem;
+            bottom: 0;
+            width: 24rem;
+            margin: 0;
+        }
     }
 
     .ranked-project-description {

@@ -10,13 +10,17 @@
 <body class="min-h-screen bg-canvas font-sans text-primary antialiased" data-renderer="thymeleaf">
 <div class="page-glow fixed inset-0 -z-10"></div>
 
-<header th:replace="~{fragments/site :: header(homeUrl=${formAction}, otherRendererUrl=${otherRendererUrl}, currentRenderer='Thymeleaf', otherRenderer='Compose HTML')}"></header>
+<header th:replace="~{fragments/site :: header(homeUrl=${formAction}, otherRendererUrl=${otherRendererUrl}, currentRenderer='Thymeleaf')}"></header>
 
 <main class="mx-auto max-w-6xl px-6 py-14 sm:py-20">
     <section th:replace="~{fragments/catalog :: searchHero(query=${page.query}, formAction=${formAction})}"></section>
     <div th:replace="~{fragments/catalog :: warningBanner(message=${page.warning})}"></div>
-    <div th:if="${page.featured}" th:replace="~{fragments/featured :: featuredCatalog(categories=${page.categories})}"></div>
-    <section th:unless="${page.featured}" th:replace="~{fragments/catalog :: projectCatalog(projects=${page.projects}, status=${page.status})}"></section>
+    <th:block th:if="${page.featured}">
+        <div th:replace="~{fragments/featured :: featuredCatalog(categories=${page.categories})}"></div>
+    </th:block>
+    <th:block th:unless="${page.featured}">
+        <section th:replace="~{fragments/catalog :: projectCatalog(projects=${page.projects}, status=${page.status})}"></section>
+    </th:block>
 </main>
 
 <footer th:replace="~{fragments/site :: footer}"></footer>

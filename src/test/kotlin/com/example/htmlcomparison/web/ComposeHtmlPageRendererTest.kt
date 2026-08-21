@@ -26,7 +26,7 @@ class ComposeHtmlPageRendererTest {
         assertTrue(html.startsWith("<!doctype html><html lang=\"en\">"))
         assertTrue(html.contains("data-renderer=\"compose-html\""))
         assertTrue(html.contains("data-current-renderer=\"Compose HTML\""))
-        assertTrue(html.contains("Current renderer: Compose HTML. Switch to Thymeleaf"), html)
+        assertTrue(html.contains("aria-label=\"Switch to Thymeleaf\""), html)
         assertTrue(html.contains("src=\"/theme.js\""))
         assertTrue(html.contains("data-theme-toggle=\"true\""))
         assertTrue(html.contains("action=\"/composehtml\""))

@@ -67,9 +67,9 @@
             <code class="min-w-0 truncate text-xs text-muted" th:text="${packageInfo.coordinate}"></code>
             <span class="shrink-0 text-xs font-bold text-accent" th:text="${packageInfo.displayVersion}"></span>
         </div>
-        <p class="pt-1 text-xs text-subtle" th:if="${project.additionalPackageCount > 0}">
-            +<span th:text="${project.additionalPackageCount}"></span> more packages
-        </p>
+        <p class="pt-1 text-xs text-subtle"
+           th:if="${project.additionalPackageCount > 0}"
+           th:text="${'+' + project.additionalPackageCount + ' more packages'}"></p>
     </div>
 </article>
 </body>

@@ -43,7 +43,7 @@ class ThymeleafCatalogTemplateTest {
 
         assertTrue(html.contains("data-renderer=\"thymeleaf\""))
         assertTrue(html.contains("data-current-renderer=\"Thymeleaf\""))
-        assertTrue(html.contains("Current renderer: Thymeleaf. Switch to Compose HTML"), html)
+        assertTrue(html.contains("aria-label=\"Switch to Compose HTML\""), html)
         assertTrue(html.contains("data-theme-toggle=\"true\""))
         assertTrue(html.contains("action=\"/thymeleaf\""))
         assertTrue(html.contains("href=\"/composehtml\""))
@@ -52,7 +52,7 @@ class ThymeleafCatalogTemplateTest {
         assertFalse(html.contains("platform-7"))
         assertTrue(html.contains("example:package-3"))
         assertFalse(html.contains("example:package-4"))
-        assertTrue(html.contains("+<span>3</span> more packages"), html)
+        assertTrue(html.contains("+3 more packages"), html)
     }
 
     @Test

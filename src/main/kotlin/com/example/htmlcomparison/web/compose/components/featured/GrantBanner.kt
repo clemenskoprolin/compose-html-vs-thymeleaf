@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
+import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Section
 import org.jetbrains.compose.web.dom.Span
@@ -12,7 +13,7 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 internal fun GrantBanner() {
     Section({ classes("grant-banner", "mt-14", "overflow-hidden", "rounded-3xl", "border", "border-accent-line", "p-7", "sm:mt-20") }) {
-        Div({ classes("max-w-2xl") }) {
+        Div({ classes("relative", "z-10", "max-w-2xl", "lg:max-w-lg") }) {
             P({ classes("mb-5", "text-xs", "font-bold", "uppercase", "tracking-[0.2em]", "text-accent") }) {
                 Text("Kotlin Foundation")
             }
@@ -27,6 +28,11 @@ internal fun GrantBanner() {
                 GrantLink("https://kotlinfoundation.org/grants/", "Learn about grants", primary = false)
             }
         }
+        Img(src = "/assets/kodee-grant-winner.svg", alt = "Kodee holding a Kotlin grant winner trophy") {
+            classes("grant-figure")
+            attr("width", "490")
+            attr("height", "235")
+        }
     }
 }
 
@@ -39,6 +45,6 @@ private fun GrantLink(href: String, label: String, primary: Boolean) {
         },
     ) {
         Text(label)
-        Span({ attr("aria-hidden", "true") }) { Text("\u2192") }
+        Span({ attr("aria-hidden", "true") }) { Text("→") }
     }
 }
