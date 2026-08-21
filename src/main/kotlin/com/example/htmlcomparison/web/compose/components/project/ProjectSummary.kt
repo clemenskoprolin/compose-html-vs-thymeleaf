@@ -99,7 +99,6 @@ private fun ProjectAction(
     }
 }
 
-/** klibs.io switches these with JavaScript; here each tab is its own server-rendered URL. */
 @Composable
 internal fun ProjectTabs(
     projectPage: ProjectPage,

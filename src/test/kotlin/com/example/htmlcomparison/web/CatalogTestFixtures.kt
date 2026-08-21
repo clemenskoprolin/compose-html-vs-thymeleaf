@@ -6,7 +6,7 @@ import com.example.htmlcomparison.catalog.ProjectCategory
 import com.example.htmlcomparison.catalog.ProjectPackage
 import com.example.htmlcomparison.catalog.ProjectPage
 import com.example.htmlcomparison.catalog.RankedProject
-import org.thymeleaf.context.Context
+import com.example.htmlcomparison.web.thymeleaf.ThymeleafPageRenderer
 import org.thymeleaf.spring6.SpringTemplateEngine
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
@@ -90,30 +90,17 @@ internal object ThymeleafTestRenderer {
             }
         )
     }
+    private val renderer = ThymeleafPageRenderer(templateEngine)
 
     fun render(
         page: CatalogPage,
         formAction: String,
         otherRendererUrl: String,
-    ): String {
-        val context = Context().apply {
-            setVariable("page", page)
-            setVariable("formAction", formAction)
-            setVariable("otherRendererUrl", otherRendererUrl)
-        }
-        return templateEngine.process("catalog", context)
-    }
+    ): String = renderer.render(page, formAction, otherRendererUrl)
 
     fun renderProject(
         projectPage: ProjectPage,
         formAction: String,
         otherRendererUrl: String,
-    ): String {
-        val context = Context().apply {
-            setVariable("projectPage", projectPage)
-            setVariable("formAction", formAction)
-            setVariable("otherRendererUrl", otherRendererUrl)
-        }
-        return templateEngine.process("project", context)
-    }
+    ): String = renderer.renderProject(projectPage, formAction, otherRendererUrl)
 }
