@@ -1,6 +1,8 @@
 package com.example.htmlcomparison.web
 
 import com.example.htmlcomparison.catalog.CatalogPage
+import com.example.htmlcomparison.catalog.ProjectCategory
+import com.example.htmlcomparison.catalog.RankedProject
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -51,5 +53,59 @@ class ThymeleafCatalogTemplateTest {
         assertTrue(html.contains("example:package-3"))
         assertFalse(html.contains("example:package-4"))
         assertTrue(html.contains("+<span>3</span> more packages"), html)
+    }
+
+    @Test
+    fun `renders ranked categories and the grant banner for the default page`() {
+        val context = Context().apply {
+            setVariable(
+                "page",
+                CatalogPage(
+                    query = "",
+                    projects = emptyList(),
+                    status = "Ranked by stars",
+                    categories = listOf(
+                        ProjectCategory(
+                            title = "Compose UI",
+                            slug = "compose-ui",
+                            projects = listOf(
+                                RankedProject(
+                                    name = "compose-multiplatform",
+                                    author = "JetBrains",
+                                    stars = "19.3k",
+                                    description = "Share declarative interfaces across platforms.",
+                                    tags = listOf("#compose-ui", "#compose"),
+                                    platforms = listOf("Android JVM", "Kotlin/Native", "Wasm"),
+                                    license = "Apache License 2.0",
+                                ),
+                            ),
+                        ),
+                        ProjectCategory(
+                            title = "Local Storage",
+                            slug = "local-storage",
+                            projects = listOf(
+                                RankedProject("Store", "MobileNativeFoundation", "3.4k", grantWinner = true),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            setVariable("formAction", "/thymeleaf")
+            setVariable("otherRendererUrl", "/composehtml")
+        }
+
+        val html = templateEngine.process("catalog", context)
+
+        assertTrue(html.contains("data-category=\"compose-ui\""), html)
+        assertTrue(html.contains("compose-multiplatform"), html)
+        assertTrue(html.contains("data-star-count=\"19.3k\""), html)
+        assertTrue(html.contains("Share declarative interfaces across platforms."), html)
+        assertTrue(html.contains("#compose-ui"), html)
+        assertTrue(html.contains("Kotlin/Native"), html)
+        assertFalse(html.contains(">Platforms<"), html)
+        assertFalse(html.contains("Apache License 2.0"), html)
+        assertTrue(html.contains("Kotlin Grant Winners"), html)
+        assertTrue(html.indexOf("Compose UI") < html.indexOf("Kotlin Grant Winners"), html)
+        assertTrue(html.indexOf("Kotlin Grant Winners") < html.indexOf("Local Storage"), html)
     }
 }

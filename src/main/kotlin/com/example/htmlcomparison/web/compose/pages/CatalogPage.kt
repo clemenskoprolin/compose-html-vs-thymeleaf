@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.example.htmlcomparison.catalog.CatalogPage
 import com.example.htmlcomparison.web.compose.components.catalog.ProjectCatalog
 import com.example.htmlcomparison.web.compose.components.feedback.WarningBanner
+import com.example.htmlcomparison.web.compose.components.featured.FeaturedCatalog
 import com.example.htmlcomparison.web.compose.components.layout.SiteFooter
 import com.example.htmlcomparison.web.compose.components.layout.SiteHeader
 import com.example.htmlcomparison.web.compose.components.search.SearchHero
@@ -77,7 +78,11 @@ private fun CatalogMain(
     Main({ classes("mx-auto", "max-w-6xl", "px-6", "py-14", "sm:py-20") }) {
         SearchHero(query = page.query, formAction = formAction)
         WarningBanner(page.warning)
-        ProjectCatalog(projects = page.projects, status = page.status)
+        if (page.isFeatured) {
+            FeaturedCatalog(page.categories)
+        } else {
+            ProjectCatalog(projects = page.projects, status = page.status)
+        }
     }
 }
 

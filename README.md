@@ -28,6 +28,25 @@ To point at another checkout location:
 ./gradlew bootRun -Pcompose.html.checkout=/absolute/path/to/compose-multiplatform/html
 ```
 
+## Develop with automatic reloads
+
+Use three terminals from the project directory:
+
+```shell
+# Terminal 1: rebuild Tailwind whenever Kotlin or template classes change
+npm run css:watch
+
+# Terminal 2: recompile Kotlin whenever source files change
+./gradlew classes --continuous
+
+# Terminal 3: run the server; DevTools restarts it after compilation
+./gradlew bootRun
+```
+
+CSS, JavaScript, and Thymeleaf templates are served directly from `src/main/resources`, so they only need a browser refresh. Kotlin and Compose HTML changes are compiled by the continuous Gradle process, after which Spring DevTools performs a fast application restart. A LiveReload browser extension can refresh the browser automatically; without one, refresh the page manually.
+
+When working from IntelliJ IDEA, terminals 2 and 3 can instead be replaced by running the Spring Boot application and using **Build → Build Project** after Kotlin changes. Enabling automatic project builds makes this happen in the background.
+
 ## What happens on a search
 
 1. The browser submits a normal `GET`, for example `/composehtml?query=html`.
@@ -45,6 +64,8 @@ The generated CSS is checked in under `src/main/resources/static/app.css`, so No
 npm install
 npm run css:build
 ```
+
+During development, use `npm run css:watch` instead; it stays running and regenerates the stylesheet after each UI edit.
 
 ## Verify
 

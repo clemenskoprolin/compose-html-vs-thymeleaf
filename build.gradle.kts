@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
@@ -27,9 +29,15 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation(kotlin("reflect"))
 
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+}
+
+tasks.named<BootRun>("bootRun") {
+    sourceResources(sourceSets["main"])
 }

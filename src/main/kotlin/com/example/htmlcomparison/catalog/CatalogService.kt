@@ -18,8 +18,9 @@ class CatalogService(
         if (query.isBlank()) {
             return CatalogPage(
                 query = "",
-                projects = FeaturedProjects,
-                status = "A small preview of the Kotlin Multiplatform ecosystem.",
+                projects = emptyList(),
+                status = "Top repositories in each category, ranked by GitHub stars.",
+                categories = FeaturedCatalogSections,
             )
         }
 
@@ -44,7 +45,7 @@ class CatalogService(
             logger.warn("klibs.io MCP search failed for query '{}'", query, exception)
             CatalogPage(
                 query = query,
-                projects = FeaturedProjects,
+                projects = SearchFallbackProjects,
                 status = "Showing the local preview instead.",
                 warning = "The live klibs.io MCP search is temporarily unavailable: ${exception.userMessage()}",
             )
@@ -66,7 +67,7 @@ class CatalogService(
         private const val MAX_QUERY_LENGTH = 120
         private val CACHE_TTL: Duration = Duration.ofMinutes(2)
 
-        private val FeaturedProjects = listOf(
+        private val SearchFallbackProjects = listOf(
             ProjectCard(
                 name = "Compose Multiplatform",
                 author = "JetBrains",
@@ -118,4 +119,3 @@ class CatalogService(
         )
     }
 }
-

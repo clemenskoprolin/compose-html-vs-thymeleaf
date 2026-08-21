@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 
 class CatalogServiceTest {
     @Test
-    fun `blank query uses preview without calling MCP`() {
+    fun `blank query uses ranked categories without calling MCP`() {
         var calls = 0
         val service = CatalogService(KlibsGateway {
             calls++
@@ -16,7 +16,12 @@ class CatalogServiceTest {
         val page = service.page("  ")
 
         assertEquals(0, calls)
-        assertEquals(3, page.projects.size)
+        assertEquals(0, page.projects.size)
+        assertEquals(14, page.categories.size)
+        assertEquals("Compose UI", page.categories.first().title)
+        assertEquals("compose-multiplatform", page.categories.first().projects.first().name)
+        assertEquals("19.3k", page.categories.first().projects.first().stars)
+        assertEquals("Local Storage", page.categories[1].title)
         assertNull(page.warning)
     }
 
@@ -54,4 +59,3 @@ class CatalogServiceTest {
         assertEquals(true, page.warning?.contains("network is down"))
     }
 }
-

@@ -15,7 +15,8 @@
 <main class="mx-auto max-w-6xl px-6 py-14 sm:py-20">
     <section th:replace="~{fragments/catalog :: searchHero(query=${page.query}, formAction=${formAction})}"></section>
     <div th:replace="~{fragments/catalog :: warningBanner(message=${page.warning})}"></div>
-    <section th:replace="~{fragments/catalog :: projectCatalog(projects=${page.projects}, status=${page.status})}"></section>
+    <div th:if="${page.featured}" th:replace="~{fragments/featured :: featuredCatalog(categories=${page.categories})}"></div>
+    <section th:unless="${page.featured}" th:replace="~{fragments/catalog :: projectCatalog(projects=${page.projects}, status=${page.status})}"></section>
 </main>
 
 <footer th:replace="~{fragments/site :: footer}"></footer>

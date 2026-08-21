@@ -116,4 +116,34 @@
             radial-gradient(circle at 12% 8%, var(--theme-glow-primary), transparent 24rem),
             radial-gradient(circle at 88% 18%, var(--theme-glow-secondary), transparent 28rem);
     }
+
+    .grant-banner {
+        position: relative;
+        isolation: isolate;
+        background:
+            radial-gradient(circle at 85% 20%, var(--theme-glow-secondary), transparent 18rem),
+            linear-gradient(135deg, var(--theme-surface) 0%, var(--theme-secondary-soft) 100%);
+    }
+
+    .grant-banner::after {
+        position: absolute;
+        z-index: -1;
+        right: 1rem;
+        bottom: -4.5rem;
+        color: var(--theme-accent-solid);
+        content: "K";
+        font-size: clamp(11rem, 24vw, 19rem);
+        font-weight: 900;
+        line-height: 1;
+        opacity: 0.16;
+        transform: rotate(-8deg);
+    }
+
+    .ranked-project-description {
+        display: -webkit-box;
+        min-height: 4.5rem;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
 }
