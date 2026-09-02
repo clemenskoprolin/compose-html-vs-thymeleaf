@@ -1,0 +1,297 @@
+@import "tailwindcss" source(none);
+
+@source "../../ssr-comparison/src/main/kotlin";
+@source "../../ssr-comparison/src/main/resources/templates";
+@source "../../hydrated-search/src/commonMain/kotlin";
+
+@theme {
+    --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --color-canvas: var(--theme-canvas);
+    --color-surface: var(--theme-surface);
+    --color-surface-raised: var(--theme-surface-raised);
+    --color-input: var(--theme-input);
+    --color-card: var(--theme-card);
+    --color-card-hover: var(--theme-card-hover);
+    --color-code: var(--theme-code);
+    --color-primary: var(--theme-primary);
+    --color-muted: var(--theme-muted);
+    --color-subtle: var(--theme-subtle);
+    --color-line: var(--theme-line);
+    --color-line-strong: var(--theme-line-strong);
+    --color-accent: var(--theme-accent);
+    --color-accent-solid: var(--theme-accent-solid);
+    --color-accent-hover: var(--theme-accent-hover);
+    --color-accent-ink: var(--theme-accent-ink);
+    --color-accent-line: var(--theme-accent-line);
+    --color-secondary: var(--theme-secondary);
+    --color-secondary-soft: var(--theme-secondary-soft);
+    --color-warning: var(--theme-warning);
+    --color-warning-soft: var(--theme-warning-soft);
+    --color-warning-line: var(--theme-warning-line);
+    --color-shadow: var(--theme-shadow);
+}
+
+@layer base {
+    :root,
+    :root[data-theme="light"] {
+        color-scheme: light;
+        --theme-canvas: #f6f8f2;
+        --theme-surface: #ffffff;
+        --theme-surface-raised: rgb(255 255 255 / 0.82);
+        --theme-input: #fbfcf9;
+        --theme-card: rgb(255 255 255 / 0.9);
+        --theme-card-hover: #ffffff;
+        --theme-code: #eff3e9;
+        --theme-primary: #172012;
+        --theme-muted: #4d5b47;
+        --theme-subtle: #71806a;
+        --theme-line: #dde4d7;
+        --theme-line-strong: #c8d3bf;
+        --theme-accent: #426b0b;
+        --theme-accent-solid: #a5db46;
+        --theme-accent-hover: #94cc34;
+        --theme-accent-ink: #162207;
+        --theme-accent-line: #9acb49;
+        --theme-secondary: #17607d;
+        --theme-secondary-soft: #e3f3f9;
+        --theme-warning: #704400;
+        --theme-warning-soft: #fff5d8;
+        --theme-warning-line: #e6c771;
+        --theme-shadow: rgb(42 61 24 / 0.12);
+        --theme-glow-primary: rgb(165 219 70 / 0.2);
+        --theme-glow-secondary: rgb(56 189 248 / 0.14);
+        --theme-brand-plate: #101a0c;
+    }
+
+    :root[data-theme="dark"] {
+        color-scheme: dark;
+        --theme-canvas: #07111f;
+        --theme-surface: #0d1928;
+        --theme-surface-raised: rgb(255 255 255 / 0.05);
+        --theme-input: rgb(2 6 23 / 0.8);
+        --theme-card: rgb(255 255 255 / 0.045);
+        --theme-card-hover: rgb(255 255 255 / 0.065);
+        --theme-code: rgb(2 6 23 / 0.6);
+        --theme-primary: #f8fafc;
+        --theme-muted: #cbd5e1;
+        --theme-subtle: #94a3b8;
+        --theme-line: rgb(255 255 255 / 0.1);
+        --theme-line-strong: rgb(255 255 255 / 0.15);
+        --theme-accent: #b8f04a;
+        --theme-accent-solid: #b8f04a;
+        --theme-accent-hover: #d9f99d;
+        --theme-accent-ink: #07111f;
+        --theme-accent-line: rgb(184 240 74 / 0.4);
+        --theme-secondary: #bae6fd;
+        --theme-secondary-soft: rgb(125 211 252 / 0.1);
+        --theme-warning: #fef3c7;
+        --theme-warning-soft: rgb(252 211 77 / 0.1);
+        --theme-warning-line: rgb(252 211 77 / 0.25);
+        --theme-shadow: rgb(0 0 0 / 0.2);
+        --theme-glow-primary: rgb(184 240 74 / 0.12);
+        --theme-glow-secondary: rgb(56 189 248 / 0.12);
+        --theme-brand-plate: rgb(255 255 255 / 0.08);
+    }
+
+    html {
+        background: var(--theme-canvas);
+    }
+
+    body {
+        transition: background-color 180ms ease, color 180ms ease;
+    }
+
+    ::selection {
+        background: color-mix(in oklab, var(--theme-accent-solid) 40%, transparent);
+        color: var(--theme-primary);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        body {
+            transition: none;
+        }
+    }
+}
+
+@layer components {
+    /* The klibs.io wordmark is white, so it needs a dark plate in the light theme too. */
+    .brand-plate {
+        background: var(--theme-brand-plate);
+    }
+
+    /* A live search keeps the previous results visible while the next ones are fetched. */
+    #catalog-results[aria-busy="true"] {
+        opacity: 0.55;
+        transition: opacity 120ms ease;
+    }
+
+    .page-glow {
+        background-image:
+            radial-gradient(circle at 12% 8%, var(--theme-glow-primary), transparent 24rem),
+            radial-gradient(circle at 88% 18%, var(--theme-glow-secondary), transparent 28rem);
+    }
+
+    .grant-banner {
+        position: relative;
+        isolation: isolate;
+        background:
+            radial-gradient(circle at 85% 20%, var(--theme-glow-secondary), transparent 18rem),
+            linear-gradient(135deg, var(--theme-surface) 0%, var(--theme-secondary-soft) 100%);
+    }
+
+    /* The official Kodee grant artwork sits on the banner floor instead of a letterform. */
+    .grant-figure {
+        display: block;
+        width: 100%;
+        max-width: 24rem;
+        margin: 2.5rem auto 0;
+    }
+
+    @media (min-width: 1024px) {
+        .grant-figure {
+            position: absolute;
+            right: 1.75rem;
+            bottom: 0;
+            width: 24rem;
+            margin: 0;
+        }
+    }
+
+    /* Prose styles for the rendered README, kept on the page's own tokens. */
+    .readme {
+        color: var(--theme-muted);
+        font-size: 0.95rem;
+        line-height: 1.75;
+        overflow-wrap: anywhere;
+    }
+
+    .readme > :first-child {
+        margin-top: 0;
+    }
+
+    .readme h1,
+    .readme h2,
+    .readme h3,
+    .readme h4,
+    .readme h5,
+    .readme h6 {
+        color: var(--theme-primary);
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        line-height: 1.25;
+        margin: 2rem 0 0.75rem;
+    }
+
+    .readme h1 { font-size: 1.875rem; }
+    .readme h2 { font-size: 1.5rem; }
+    .readme h3 { font-size: 1.25rem; }
+    .readme h4,
+    .readme h5,
+    .readme h6 { font-size: 1rem; }
+
+    .readme h1,
+    .readme h2 {
+        border-bottom: 1px solid var(--theme-line);
+        padding-bottom: 0.5rem;
+    }
+
+    .readme p,
+    .readme ul,
+    .readme ol,
+    .readme blockquote,
+    .readme table,
+    .readme pre {
+        margin: 1rem 0;
+    }
+
+    .readme ul,
+    .readme ol {
+        padding-left: 1.5rem;
+    }
+
+    .readme ul { list-style: disc; }
+    .readme ol { list-style: decimal; }
+    .readme li { margin: 0.35rem 0; }
+    .readme li::marker { color: var(--theme-subtle); }
+
+    .readme a {
+        color: var(--theme-accent);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .readme a:hover {
+        color: var(--theme-primary);
+        text-decoration: underline;
+    }
+
+    .readme strong { color: var(--theme-primary); font-weight: 700; }
+
+    .readme code {
+        background: var(--theme-code);
+        border-radius: 0.375rem;
+        font-size: 0.85em;
+        padding: 0.15rem 0.35rem;
+    }
+
+    .readme pre {
+        background: var(--theme-code);
+        border: 1px solid var(--theme-line);
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        padding: 1rem;
+    }
+
+    .readme pre code {
+        background: none;
+        font-size: 0.85rem;
+        padding: 0;
+    }
+
+    .readme blockquote {
+        border-left: 3px solid var(--theme-accent-line);
+        color: var(--theme-subtle);
+        padding-left: 1rem;
+    }
+
+    .readme img {
+        display: inline-block;
+        max-width: 100%;
+        height: auto;
+        vertical-align: middle;
+    }
+
+    .readme hr {
+        border-color: var(--theme-line);
+        margin: 2rem 0;
+    }
+
+    .readme table {
+        border-collapse: collapse;
+        display: block;
+        overflow-x: auto;
+        width: max-content;
+        max-width: 100%;
+    }
+
+    .readme th,
+    .readme td {
+        border: 1px solid var(--theme-line);
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+    }
+
+    .readme th {
+        background: var(--theme-code);
+        color: var(--theme-primary);
+        font-weight: 700;
+    }
+
+    .project-card-description {
+        display: -webkit-box;
+        min-height: 4.5rem;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
+}

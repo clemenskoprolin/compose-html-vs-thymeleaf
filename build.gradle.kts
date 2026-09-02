@@ -1,49 +1,11 @@
-import org.springframework.boot.gradle.tasks.run.BootRun
-
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.spring")
-    kotlin("plugin.compose")
-    id("org.jetbrains.compose")
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
+    base
+    kotlin("jvm") apply false
+    kotlin("multiplatform") apply false
+    kotlin("plugin.spring") apply false
+    kotlin("plugin.serialization") apply false
+    kotlin("plugin.compose") apply false
 }
 
 group = "com.example"
 version = "0.1.0-SNAPSHOT"
-
-val composeVersion: String = providers.gradleProperty("compose.version").get()
-
-kotlin {
-    jvmToolchain(21)
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
-    }
-}
-
-dependencies {
-    implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
-    implementation("org.jetbrains.compose.html:html-core:$composeVersion")
-
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation(kotlin("reflect"))
-
-    // The project detail page renders each project's GitHub README.
-    implementation("org.commonmark:commonmark:0.30.0")
-    implementation("org.commonmark:commonmark-ext-gfm-tables:0.30.0")
-    implementation("org.commonmark:commonmark-ext-gfm-strikethrough:0.30.0")
-    implementation("org.jsoup:jsoup:1.23.1")
-
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
-tasks.named<BootRun>("bootRun") {
-    sourceResources(sourceSets["main"])
-}

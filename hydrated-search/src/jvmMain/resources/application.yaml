@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: compose-html-hydrated-search
+
+server:
+  port: 8081
+
+comparison:
+  ssr-url: http://localhost:8080/composehtml
+
+klibs:
+  mcp:
+    url: https://api.klibs.io/mcp
+    timeout-seconds: 12
+  readme:
+    timeout-seconds: 8
+

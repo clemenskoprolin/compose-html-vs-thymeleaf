@@ -2,12 +2,11 @@
   "name": "compose-html-vs-thymeleaf-styles",
   "private": true,
   "scripts": {
-    "css:build": "tailwindcss -i ./src/main/tailwind/input.css -o ./src/main/resources/static/app.css --minify",
-    "css:watch": "tailwindcss -i ./src/main/tailwind/input.css -o ./src/main/resources/static/app.css --watch"
+    "css:build": "tailwindcss -i ./web-assets/tailwind/input.css -o ./web-assets/static/app.css --minify",
+    "css:watch": "tailwindcss -i ./web-assets/tailwind/input.css -o ./web-assets/static/app.css --watch"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.3",
     "tailwindcss": "4.3.3"
   }
 }
-

@@ -1,66 +1,70 @@
-# Compose HTML vs Thymeleaf
+# Compose HTML server rendering examples
 
-A Spring Boot prototype that renders the same klibs.io project catalog in two ways:
+This repository contains two focused Spring Boot applications built on the same klibs.io catalog backend:
 
-- `GET /composehtml` calls the local `composeHtmlToString { ... }` implementation.
-- `GET /thymeleaf` returns the conventional `catalog.html` Thymeleaf view.
+- `ssr-comparison` renders every request as a complete page, once with Compose HTML and once with Thymeleaf.
+- `hydrated-search` server-renders Compose HTML, transfers a public catalog snapshot, and hydrates the existing DOM so later searches update in place.
+- `catalog` contains the MCP client, cache, project models, and README support shared by both applications.
 
-Both endpoints use the same `CatalogPage` model, the same compiled Tailwind stylesheet, and the same search flow.
+The projects use the Compose Multiplatform checkout at `../compose-multiplatform/html` by default. Override it with `-Pcompose.html.checkout=/absolute/path` when needed.
 
-## Run it
+## Classical SSR comparison
 
-This project expects the Compose Multiplatform checkout beside it at `../compose-multiplatform/html`.
+Run:
 
 ```shell
-./gradlew bootRun
+./gradlew :ssr-comparison:bootRun
 ```
 
-Then open either:
+Then open:
 
 - <http://localhost:8080/composehtml>
 - <http://localhost:8080/thymeleaf>
 
-To point at another checkout location:
+Both routes use the same `CatalogPage`, stylesheet, and GET-based search flow. Every search asks Spring for a model and returns a newly rendered document. The renderer timing is written to the application log.
+
+## Hydrated search
+
+Run:
 
 ```shell
-./gradlew bootRun -Pcompose.html.checkout=/absolute/path/to/compose-multiplatform/html
+./gradlew :hydrated-search:bootRun
 ```
 
-## Develop with automatic reloads
+Then open <http://localhost:8081/>.
 
-Use three terminals from the project directory:
+[`SearchDocumentRenderer.kt`](hydrated-search/src/jvmMain/kotlin/com/example/htmlcomparison/hydration/SearchDocumentRenderer.kt) wraps the shared [`SearchView.kt`](hydrated-search/src/commonMain/kotlin/com/example/htmlcomparison/hydration/SearchView.kt) in a `HydrationRoot` and transfers a public [`SearchState`](hydrated-search/src/commonMain/kotlin/com/example/htmlcomparison/hydration/SearchState.kt). In the browser, [`Main.kt`](hydrated-search/src/jsMain/kotlin/com/example/htmlcomparison/hydration/Main.kt) calls `hydrateRoot` and starts the stateful [`SearchApp`](hydrated-search/src/jsMain/kotlin/com/example/htmlcomparison/hydration/SearchApp.kt).
 
-```shell
-# Terminal 1: rebuild Tailwind whenever Kotlin or template classes change
-npm run css:watch
+```text
+JVM                                      Browser
 
-# Terminal 2: recompile Kotlin whenever source files change
-./gradlew classes --continuous
-
-# Terminal 3: run the server; DevTools restarts it after compilation
-./gradlew bootRun
+static header                            hydrateRoot
+HydrationRoot(SearchState)       ───▶    SearchApp
+  SearchView                               SearchView
+static footer
 ```
 
-## What happens on a search
+The initial response contains the complete page plus a serialized state. The browser deserializes that state and adopts the existing `SearchView` DOM. The static header and footer remain outside the composition.
 
-1. The browser submits the GET form, for example `/composehtml?query=html&platforms=wasm`.
-2. Spring asks `CatalogService` for a shared page model.
-3. `KlibsMcpClient` initializes the public Streamable HTTP MCP endpoint and calls the `searchProjects` tool, passing the selected platforms straight through.
-4. The selected renderer turns the model into a complete HTML response, and the browser loads the new page.
+Later interactions call `/api/search`, then recompose the view and update the URL in place. Typing is debounced, and stale responses are ignored. The form and filter links retain normal GET URLs, so search still works as a full-page request without JavaScript.
 
 ## Tailwind CSS
 
-The generated CSS is checked in under `src/main/resources/static/app.css`, so Node is not required to run the server. Regenerate it after changing UI classes with:
+Shared browser assets live in `web-assets` and are included by both applications. The generated stylesheet is checked in, so Node is not required to run either server.
+
+After changing UI classes, regenerate it with:
 
 ```shell
 npm install
 npm run css:build
 ```
 
-During development, use `npm run css:watch` instead; it stays running and regenerates the stylesheet after each UI edit.
+For continuous regeneration, use `npm run css:watch`.
 
 ## Verify
 
 ```shell
-./gradlew test
+./gradlew :catalog:test \
+  :ssr-comparison:test \
+  :hydrated-search:jsBrowserDistribution
 ```

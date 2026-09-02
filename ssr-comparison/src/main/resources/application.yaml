@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: compose-html-vs-thymeleaf
+  thymeleaf:
+    cache: false # enable or disable for timing measurements
+
+klibs:
+  mcp:
+    url: https://api.klibs.io/mcp
+    timeout-seconds: 12
