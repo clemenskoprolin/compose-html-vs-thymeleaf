@@ -25,16 +25,3 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "compose-html-vs-thymeleaf"
-
-// The prototype consumes the local checkout so it can exercise composeHtmlToString
-// before that API is available from a published Compose HTML artifact.
-val composeHtmlCheckout = providers.gradleProperty("compose.html.checkout")
-    .orElse("../compose-multiplatform/html")
-
-includeBuild(composeHtmlCheckout.get()) {
-    dependencySubstitution {
-        substitute(module("org.jetbrains.compose.html:html-core"))
-            .using(project(":html-core"))
-    }
-}
-

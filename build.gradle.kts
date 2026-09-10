@@ -13,6 +13,7 @@ group = "com.example"
 version = "0.1.0-SNAPSHOT"
 
 val composeVersion: String = providers.gradleProperty("compose.version").get()
+val composeHtmlEapVersion: String = providers.gradleProperty("compose.html.eap.version").get()
 
 kotlin {
     jvmToolchain(21)
@@ -23,7 +24,8 @@ kotlin {
 
 dependencies {
     implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
-    implementation("org.jetbrains.compose.html:html-core:$composeVersion")
+    implementation("org.jetbrains.compose.html.eap:html-core-eap:$composeHtmlEapVersion")
+    implementation("org.jetbrains.compose.html:kotlinx-browser-common-subset:$composeHtmlEapVersion")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")

@@ -2,14 +2,12 @@
 
 A Spring Boot prototype that renders the same klibs.io project catalog in two ways:
 
-- `GET /composehtml` calls the local `composeHtmlToString { ... }` implementation.
+- `GET /composehtml` uses the published Compose HTML EAP string renderer.
 - `GET /thymeleaf` returns the conventional `catalog.html` Thymeleaf view.
 
 Both endpoints use the same `CatalogPage` model, the same compiled Tailwind stylesheet, and the same search flow.
 
 ## Run it
-
-This project expects the Compose Multiplatform checkout beside it at `../compose-multiplatform/html`.
 
 ```shell
 ./gradlew bootRun
@@ -19,12 +17,6 @@ Then open either:
 
 - <http://localhost:8080/composehtml>
 - <http://localhost:8080/thymeleaf>
-
-To point at another checkout location:
-
-```shell
-./gradlew bootRun -Pcompose.html.checkout=/absolute/path/to/compose-multiplatform/html
-```
 
 ## Develop with automatic reloads
 
