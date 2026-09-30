@@ -62,7 +62,7 @@ private fun Crumb(
 
 @Composable
 internal fun ProjectTitle(name: String) {
-    H1({ classes("mt-4", "break-words", "text-4xl", "font-black", "leading-tight", "tracking-tight", "text-primary", "sm:text-5xl", "") }) {
+    H1({ classes("mt-4", "break-words", "text-4xl", "font-black", "leading-tight", "tracking-tight", "text-primary", "sm:text-5xl") }) {
         Text(name)
     }
 }

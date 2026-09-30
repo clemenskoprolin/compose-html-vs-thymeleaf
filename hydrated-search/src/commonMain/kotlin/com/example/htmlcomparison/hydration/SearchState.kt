@@ -1,13 +1,9 @@
 package com.example.htmlcomparison.hydration
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-
 /**
  * The public, immutable state transferred from the JVM renderer to the browser.
  * Keep this deliberately smaller than the server's catalog model: it is visible in page source.
  */
-@Serializable
 data class SearchState(
     val query: String,
     val status: String,
@@ -27,14 +23,12 @@ data class SearchState(
         SearchParams(query = query, platforms = platforms)
 }
 
-@Serializable
 data class PlatformSnapshot(
     val id: String,
     val label: String,
     val selected: Boolean,
 )
 
-@Serializable
 data class ProjectSnapshot(
     val name: String,
     val author: String,
@@ -43,7 +37,6 @@ data class ProjectSnapshot(
     val displayedPlatforms: List<String>,
 )
 
-@Serializable
 data class CategorySnapshot(
     val title: String,
     val slug: String,
@@ -51,7 +44,6 @@ data class CategorySnapshot(
     val projects: List<RankedProjectSnapshot>,
 )
 
-@Serializable
 data class RankedProjectSnapshot(
     val name: String,
     val author: String,
@@ -63,7 +55,6 @@ data class RankedProjectSnapshot(
     val grantWinner: Boolean,
 )
 
-@Serializable
 data class SearchParams(
     val query: String,
     val platforms: List<String> = emptyList(),
@@ -75,15 +66,6 @@ data class SearchParams(
         platforms.distinct().forEach { platform -> add("platforms=${platform.urlEncoded()}") }
     }.joinToString("&")
 }
-
-private val SearchStateJson = Json {
-    encodeDefaults = true
-    ignoreUnknownKeys = true
-}
-
-fun SearchState.toJson(): String = SearchStateJson.encodeToString(this)
-
-fun searchStateFromJson(serialized: String): SearchState = SearchStateJson.decodeFromString(serialized)
 
 /** RFC 3986 encoding keeps links identical on the JVM and in the browser. */
 private fun String.urlEncoded(): String = buildString {

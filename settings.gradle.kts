@@ -10,7 +10,6 @@ pluginManagement {
         kotlin("jvm").version(extra["kotlin.version"] as String)
         kotlin("multiplatform").version(extra["kotlin.version"] as String)
         kotlin("plugin.spring").version(extra["kotlin.version"] as String)
-        kotlin("plugin.serialization").version(extra["kotlin.version"] as String)
         kotlin("plugin.compose").version(extra["kotlin.version"] as String)
         id("org.jetbrains.compose").version(extra["compose.version"] as String)
         id("org.springframework.boot").version(extra["spring.boot.version"] as String)
@@ -32,16 +31,23 @@ include(":catalog")
 include(":hydrated-search")
 include(":ssr-comparison")
 
-// The prototype consumes the local checkout so it can exercise server rendering and hydration.
-// before that API is available from a published Compose HTML artifact.
-val composeHtmlCheckout = providers.gradleProperty("compose.html.checkout")
-    .orElse("../compose-multiplatform/html")
+val localProperties = java.util.Properties().apply {
+    val propertiesFile = rootDir.resolve("local.properties")
+    if (propertiesFile.isFile) propertiesFile.inputStream().use(::load)
+}
 
-includeBuild(composeHtmlCheckout.get()) {
-    dependencySubstitution {
-        substitute(module("org.jetbrains.compose.html:html-core"))
-            .using(project(":html-core"))
-        substitute(module("org.jetbrains.compose.html:kotlinx-browser-common-subset"))
-            .using(project(":kotlinx-browser-common-subset"))
+val composeHtmlCheckout = providers.gradleProperty("compose.html.checkout").orNull
+    ?: localProperties.getProperty("compose.html.checkout")
+
+composeHtmlCheckout?.let { checkoutPath ->
+    val checkoutDirectory = file(checkoutPath)
+    require(checkoutDirectory.resolve("settings.gradle.kts").isFile) {
+        "compose.html.checkout must point to a Compose HTML Gradle build: $checkoutDirectory"
+    }
+    includeBuild(checkoutDirectory) {
+        dependencySubstitution {
+            substitute(module("org.jetbrains.compose.html.eap:html-core-eap"))
+                .using(project(":html-core-eap"))
+        }
     }
 }

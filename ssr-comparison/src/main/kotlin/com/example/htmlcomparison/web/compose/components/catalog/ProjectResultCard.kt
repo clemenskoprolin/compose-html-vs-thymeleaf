@@ -15,7 +15,6 @@ internal fun ProjectResultCard(
     project: ProjectCard,
     href: String,
 ) {
-    // The whole card opens the detail view; klibs.io stays one click further in.
     A(
         href = href,
         attrs = {

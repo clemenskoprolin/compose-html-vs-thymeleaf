@@ -1,7 +1,6 @@
 package com.example.htmlcomparison.hydration
 
 import com.example.htmlcomparison.catalog.CatalogService
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
-import kotlin.time.measureTimedValue
 
 @Controller
 class HydratedSearchController(
@@ -25,11 +23,7 @@ class HydratedSearchController(
         @RequestParam(required = false) platforms: List<String>?,
     ): ResponseEntity<String> {
         val state = catalogService.page(query, platforms).toSearchState()
-        val (html, duration) = measureTimedValue { documentRenderer.render(state, ssrComparisonUrl) }
-        logger.info(
-            "SSR render renderer=compose-html-hydrated page=catalog durationMs={}",
-            duration.inWholeNanoseconds / NANOS_PER_MILLISECOND,
-        )
+        val html = documentRenderer.render(state, ssrComparisonUrl)
         return ResponseEntity.ok()
             .contentType(MediaType.TEXT_HTML)
             .body(html)
@@ -45,10 +39,5 @@ class HydratedSearchController(
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_JSON)
             .body(state.toJson())
-    }
-
-    private companion object {
-        val logger = LoggerFactory.getLogger(HydratedSearchController::class.java)
-        const val NANOS_PER_MILLISECOND = 1_000_000.0
     }
 }

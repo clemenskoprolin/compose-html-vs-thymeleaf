@@ -1,7 +1,8 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.spring")
-    kotlin("plugin.serialization")
     kotlin("plugin.compose")
     id("org.jetbrains.compose")
     id("org.springframework.boot")
@@ -12,16 +13,16 @@ group = "com.example"
 version = "0.1.0-SNAPSHOT"
 
 val composeVersion: String = providers.gradleProperty("compose.version").get()
+val composeHtmlEapVersion: String = providers.gradleProperty("compose.html.eap.version").get()
+val kotlinxBrowserCommonSubsetVersion: String =
+    providers.gradleProperty("compose.html.eap.kotlinx-browser-common-subset.version").get()
 val generatedWebResources = layout.buildDirectory.dir("generated/web-resources")
 
 kotlin {
     jvm()
-    js(IR) {
-        browser {
-            commonWebpackConfig {
-                outputFileName = "search-client.js"
-            }
-        }
+    wasmJs {
+        outputModuleName = "search-client"
+        browser()
         binaries.executable()
     }
     jvmToolchain(21)
@@ -29,10 +30,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
-            implementation("org.jetbrains.compose.html:html-core:$composeVersion")
-            implementation("org.jetbrains.compose.html:kotlinx-browser-common-subset:0.0.1-ssr-local")
+            implementation("org.jetbrains.compose.html.eap:html-core-eap:$composeHtmlEapVersion")
+            implementation("org.jetbrains.compose.html:kotlinx-browser-common-subset:$kotlinxBrowserCommonSubsetVersion")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
         }
 
         jvmMain {
@@ -41,6 +41,7 @@ kotlin {
             dependencies {
                 implementation(project(":catalog"))
                 implementation("org.springframework.boot:spring-boot-starter-web")
+                implementation("tools.jackson.core:jackson-databind")
                 implementation(kotlin("reflect"))
             }
         }
@@ -49,9 +50,12 @@ kotlin {
 }
 
 val copyBrowserBundle = tasks.register<Sync>("copyBrowserBundle") {
-    dependsOn(tasks.named("jsBrowserDistribution"))
-    from(layout.buildDirectory.dir("dist/js/productionExecutable")) {
-        include("search-client.js")
+    dependsOn(tasks.named("wasmJsProductionExecutableCompileSync"))
+    val browserDistribution = layout.buildDirectory.dir(
+        "compileSync/wasmJs/main/productionExecutable/optimized",
+    )
+    from(browserDistribution) {
+        include("search-client*")
     }
     into(generatedWebResources.map { it.dir("static") })
 }

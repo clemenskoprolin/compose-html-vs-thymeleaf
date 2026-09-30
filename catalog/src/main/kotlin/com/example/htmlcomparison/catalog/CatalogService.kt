@@ -22,7 +22,8 @@ class CatalogService(
     ): CatalogPage {
         val query = rawQuery.orEmpty().trim().take(MAX_QUERY_LENGTH)
         val platforms = Platform.select(rawPlatforms)
-        if (query.isBlank()) {
+
+        if (query.isBlank()) { //default
             val categories = FeaturedCatalogSections.supporting(platforms)
             return CatalogPage(
                 query = "",
@@ -37,7 +38,7 @@ class CatalogService(
         }
 
         val key = SearchKey(query, platforms)
-        val cached = cache[key]
+        val cached = cache[key] // don't DDOS mcp server
             ?.takeIf { Duration.between(it.createdAt, Instant.now()) < CACHE_TTL }
             ?.projects
 

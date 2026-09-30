@@ -6,7 +6,19 @@ This repository contains two focused Spring Boot applications built on the same 
 - `hydrated-search` server-renders Compose HTML, transfers a public catalog snapshot, and hydrates the existing DOM so later searches update in place.
 - `catalog` contains the MCP client, cache, project models, and README support shared by both applications.
 
-The projects use the Compose Multiplatform checkout at `../compose-multiplatform/html` by default. Override it with `-Pcompose.html.checkout=/absolute/path` when needed.
+By default, Gradle downloads the Compose HTML EAP module and browser-subset artifact at the versions in `gradle.properties` from the JetBrains development repository.
+
+To test a local Compose HTML build, set its `html` directory in the ignored root `local.properties` file:
+
+```properties
+compose.html.checkout=/absolute/path/to/compose-multiplatform/html
+```
+
+You can also use `-Pcompose.html.checkout=/absolute/path/to/html`. The checkout must enable the EAP modules in its own `local.properties`:
+
+```properties
+compose.html.eap.enabled=true
+```
 
 ## Classical SSR comparison
 
@@ -21,7 +33,7 @@ Then open:
 - <http://localhost:8080/composehtml>
 - <http://localhost:8080/thymeleaf>
 
-Both routes use the same `CatalogPage`, stylesheet, and GET-based search flow. Every search asks Spring for a model and returns a newly rendered document. The renderer timing is written to the application log.
+Both routes use the same `CatalogPage`, stylesheet, and GET-based search flow. Every search asks Spring for a model and returns a newly rendered document.
 
 ## Hydrated search
 
@@ -33,7 +45,7 @@ Run:
 
 Then open <http://localhost:8081/>.
 
-[`SearchDocumentRenderer.kt`](hydrated-search/src/jvmMain/kotlin/com/example/htmlcomparison/hydration/SearchDocumentRenderer.kt) wraps the shared [`SearchView.kt`](hydrated-search/src/commonMain/kotlin/com/example/htmlcomparison/hydration/SearchView.kt) in a `HydrationRoot` and transfers a public [`SearchState`](hydrated-search/src/commonMain/kotlin/com/example/htmlcomparison/hydration/SearchState.kt). In the browser, [`Main.kt`](hydrated-search/src/jsMain/kotlin/com/example/htmlcomparison/hydration/Main.kt) calls `hydrateRoot` and starts the stateful [`SearchApp`](hydrated-search/src/jsMain/kotlin/com/example/htmlcomparison/hydration/SearchApp.kt).
+[`SearchDocumentRenderer.kt`](hydrated-search/src/jvmMain/kotlin/com/example/htmlcomparison/hydration/SearchDocumentRenderer.kt) wraps the shared [`SearchView.kt`](hydrated-search/src/commonMain/kotlin/com/example/htmlcomparison/hydration/SearchView.kt) in a `HydrationRoot` and transfers a public [`SearchState`](hydrated-search/src/commonMain/kotlin/com/example/htmlcomparison/hydration/SearchState.kt). In the browser, the Kotlin/Wasm [`Main.kt`](hydrated-search/src/wasmJsMain/kotlin/com/example/htmlcomparison/hydration/Main.kt) calls `hydrateRoot` and starts the stateful [`SearchApp`](hydrated-search/src/wasmJsMain/kotlin/com/example/htmlcomparison/hydration/SearchApp.kt).
 
 ```text
 JVM                                      Browser
@@ -66,5 +78,5 @@ For continuous regeneration, use `npm run css:watch`.
 ```shell
 ./gradlew :catalog:test \
   :ssr-comparison:test \
-  :hydrated-search:jsBrowserDistribution
+  :hydrated-search:copyBrowserBundle
 ```

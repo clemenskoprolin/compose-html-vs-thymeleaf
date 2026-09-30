@@ -70,7 +70,7 @@ private fun SearchDocument(state: SearchState, ssrComparisonUrl: String) {
             }
             Script(attrs = {
                 type(ScriptType.Module)
-                src("/search-client.js")
+                src("/search-client.mjs")
             })
             SiteFooter()
         }

@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
+
 package com.example.htmlcomparison.hydration
 
 import androidx.compose.runtime.Composable
@@ -12,12 +14,24 @@ import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.w3c.fetch.RequestInit
-import kotlin.js.console
-import kotlin.js.unsafeCast
+import kotlin.js.JsAny
+import kotlin.js.JsString
+import kotlin.js.Promise
 import kotlin.time.Duration.Companion.milliseconds
 
 private val SearchDebounce = 250.milliseconds
+
+private external interface SearchResponse : JsAny {
+    val ok: Boolean
+    val status: Int
+    fun text(): Promise<JsString>
+}
+
+@JsName("fetch")
+private external fun fetchSearch(input: String): Promise<SearchResponse>
+
+@JsFun("message => console.error(message)")
+private external fun consoleError(message: String)
 
 /** Owns all browser-only state; [SearchView] remains shared with the JVM renderer. */
 @Composable
@@ -49,7 +63,7 @@ internal fun SearchApp(
                     updateUrl(nextState)
                 }
             } catch (failure: Throwable) {
-                console.error("Hydrated catalog search failed", failure)
+                consoleError("Hydrated catalog search failed\n${failure.stackTraceToString()}")
                 if (generation == requestGeneration) {
                     searchState = searchState.copy(
                         status = "The previous results are still shown.",
@@ -89,15 +103,11 @@ internal fun SearchApp(
 }
 
 internal suspend fun fetchSearchResults(params: SearchParams): SearchState {
-    val response = window.fetch(params.url(SearchApiPath), EmptyRequestInit).await()
+    val response = fetchSearch(params.url(SearchApiPath)).await<SearchResponse>()
     check(response.ok) { "Search returned HTTP ${response.status}" }
-    return searchStateFromJson(response.text().await())
+    return searchStateFromJson(response.text().await<JsString>().toString())
 }
 
 private fun replaceUrl(state: SearchState) {
     window.history.replaceState(null, "", state.params().url("/"))
 }
-
-// The generated RequestInit() factory writes null enum values, which browsers reject.
-// An empty JavaScript object is the native representation of omitted fetch options.
-private val EmptyRequestInit: RequestInit = js("({})").unsafeCast<RequestInit>()
