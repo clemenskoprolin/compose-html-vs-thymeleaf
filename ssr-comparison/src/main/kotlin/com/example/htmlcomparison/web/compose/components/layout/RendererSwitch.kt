@@ -7,10 +7,10 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 
 /**
- * Both renderers keep the same position in the control, so only the highlight moves when
+ * All examples keep the same position in the control, so only the highlight moves when
  * switching. The link carries the active query, so a search survives the switch.
  */
-private val RendererOrder = listOf("Compose HTML", "Thymeleaf")
+private val RendererOrder = listOf("Compose HTML", "Streaming", "Thymeleaf")
 
 @Composable
 internal fun RendererSwitch(
@@ -26,7 +26,12 @@ internal fun RendererSwitch(
             if (renderer == currentRenderer) {
                 CurrentRenderer(renderer)
             } else {
-                OtherRenderer(renderer, otherRendererUrl)
+                val url = when (renderer) {
+                    "Compose HTML" -> otherRendererUrl.replaceFirst("/thymeleaf", "/composehtml")
+                    "Streaming" -> otherRendererUrl.replaceFirst("/thymeleaf", "/composehtml-streaming")
+                    else -> otherRendererUrl
+                }
+                OtherRenderer(renderer, url)
             }
         }
     }

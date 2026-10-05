@@ -2,7 +2,7 @@
 
 This repository contains two focused Spring Boot applications built on the same klibs.io catalog backend:
 
-- `ssr-comparison` renders every request as a complete page, once with Compose HTML and once with Thymeleaf.
+- `ssr-comparison` renders every request as a complete page with buffered Compose HTML, streaming Compose HTML or Thymeleaf.
 - `hydrated-search` server-renders Compose HTML, transfers a public catalog snapshot, and hydrates the existing DOM so later searches update in place.
 - `catalog` contains the MCP client, cache, project models, and README support shared by both applications.
 
@@ -31,9 +31,14 @@ Run:
 Then open:
 
 - <http://localhost:8080/composehtml>
+- <http://localhost:8080/composehtml-streaming>
 - <http://localhost:8080/thymeleaf>
 
-Both routes use the same `CatalogPage`, stylesheet, and GET-based search flow. Every search asks Spring for a model and returns a newly rendered document.
+All three routes use the same `CatalogPage`, stylesheet, and GET-based search flow. Every search asks Spring for a model and returns a newly rendered document. The header switches between examples while preserving the search, project, and active tab.
+
+`/composehtml` builds the complete HTML string before responding. `/composehtml-streaming` uses the same page composables with native `composeHtmlToStream`, writing and flushing each chunk as UTF-8 through Spring MVC's `StreamingResponseBody`. Catalog data is loaded before the response starts; HTML is streamed during rendering. Project pages, tabs, filters, and searches stay under the selected entry point.
+
+Separate URLs keep both examples available for comparison in the same running application, without a global flag or a query parameter that every navigation would need to carry. Once streaming starts, a rendering error can leave a partial document because already sent chunks cannot be retracted.
 
 ## Hydrated search
 

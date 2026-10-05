@@ -16,9 +16,12 @@ internal fun SiteHeader(
     currentRenderer: String,
 ) {
     Header({ classes("border-b", "border-line") }) {
-        Div({ classes("mx-auto", "flex", "max-w-6xl", "items-center", "justify-between", "gap-3", "px-6", "py-5") }) {
+        Div({ classes("mx-auto", "flex", "max-w-6xl", "flex-wrap", "items-center", "justify-between", "gap-3", "px-6", "py-5") }) {
             BrandLink(homeUrl)
-            HeaderActions(otherRendererUrl, currentRenderer)
+            HeaderActions(
+                otherRendererUrl,
+                if (homeUrl == "/composehtml-streaming") "Streaming" else currentRenderer,
+            )
         }
     }
 }
@@ -46,7 +49,7 @@ private fun HeaderActions(
     otherRendererUrl: String,
     currentRenderer: String,
 ) {
-    Div({ classes("flex", "shrink-0", "items-center", "gap-2") }) {
+    Div({ classes("flex", "max-w-full", "shrink-0", "flex-wrap", "items-center", "gap-2") }) {
         ThemeToggle()
         RendererSwitch(otherRendererUrl, currentRenderer)
     }

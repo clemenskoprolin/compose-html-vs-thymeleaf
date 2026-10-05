@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import org.springframework.web.util.UriComponentsBuilder
 
 @Controller
@@ -59,6 +60,46 @@ class FrontendController(
                 otherRendererUrl = projectPage.tabUrl(THYMELEAF, projectPage.tab),
             )
         )
+    }
+
+    // Compose streaming: resolve the model before starting the asynchronous response.
+
+    @GetMapping(COMPOSE_HTML_STREAMING, produces = [MediaType.TEXT_HTML_VALUE])
+    @ResponseBody
+    fun composeHtmlStreaming(
+        @RequestParam(required = false) query: String?,
+        @RequestParam(required = false) platforms: List<String>?,
+    ): ResponseEntity<StreamingResponseBody> {
+        val page = catalogService.page(query, platforms)
+        return streamedHtml { output ->
+            composeHtmlPageRenderer.stream(
+                page = page,
+                formAction = COMPOSE_HTML_STREAMING,
+                otherRendererUrl = comparisonUrl(THYMELEAF, page),
+                output = output,
+            )
+        }
+    }
+
+    @GetMapping("$COMPOSE_HTML_STREAMING/project/{author}/{name}", produces = [MediaType.TEXT_HTML_VALUE])
+    @ResponseBody
+    fun composeHtmlStreamingProject(
+        @PathVariable author: String,
+        @PathVariable name: String,
+        @RequestParam(required = false) query: String?,
+        @RequestParam(required = false) platforms: List<String>?,
+        @RequestParam(required = false) tab: String?,
+    ): ResponseEntity<StreamingResponseBody> {
+        val projectPage = catalogService.project(author, name, tab)
+            .copy(backParameters = backContext(query, platforms).searchParameters)
+        return streamedHtml { output ->
+            composeHtmlPageRenderer.streamProject(
+                projectPage = projectPage,
+                formAction = COMPOSE_HTML_STREAMING,
+                otherRendererUrl = projectPage.tabUrl(THYMELEAF, projectPage.tab),
+                output = output,
+            )
+        }
     }
 
     // Thymeleaf
@@ -114,6 +155,11 @@ class FrontendController(
         .contentType(MediaType.TEXT_HTML)
         .body(body)
 
+    private fun streamedHtml(body: StreamingResponseBody): ResponseEntity<StreamingResponseBody> =
+        ResponseEntity.ok()
+            .contentType(MediaType("text", "html", Charsets.UTF_8))
+            .body(body)
+
     /** Carries the active search to the other renderer so switching keeps the page in place. */
     private fun comparisonUrl(path: String, page: CatalogPage): String {
         if (page.query.isBlank() && page.platforms.isEmpty()) return path
@@ -127,6 +173,7 @@ class FrontendController(
 
     private companion object {
         const val COMPOSE_HTML = "/composehtml"
+        const val COMPOSE_HTML_STREAMING = "/composehtml-streaming"
         const val THYMELEAF = "/thymeleaf"
     }
 }

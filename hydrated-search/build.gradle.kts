@@ -55,7 +55,7 @@ val copyBrowserBundle = tasks.register<Sync>("copyBrowserBundle") {
         "compileSync/wasmJs/main/productionExecutable/optimized",
     )
     from(browserDistribution) {
-        include("search-client*")
+        include("search-client*.mjs", "search-client.wasm")
     }
     into(generatedWebResources.map { it.dir("static") })
 }
